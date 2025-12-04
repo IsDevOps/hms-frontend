@@ -1,0 +1,16 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.gitignore
+.husky
+.prettierignore
+.prettierrc
+commitlint.config.mjs
+eslint.config.mjs
+postcss.config.mjs
+tsconfig.json
+components.json
