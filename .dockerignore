@@ -9,8 +9,3 @@ README.md
 .husky
 .prettierignore
 .prettierrc
-commitlint.config.mjs
-eslint.config.mjs
-postcss.config.mjs
-tsconfig.json
-components.json
