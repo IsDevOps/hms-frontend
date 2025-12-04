@@ -88,7 +88,6 @@ const AdminDashboardPage = () => {
         </button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label={MOCK_DASHBOARD_STATS.occupancy.label}
@@ -167,7 +166,7 @@ const AdminDashboardPage = () => {
               <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {MOCK_ROOMS.map((room) => (
               <RoomCard key={room.id} room={room} compact />
             ))}

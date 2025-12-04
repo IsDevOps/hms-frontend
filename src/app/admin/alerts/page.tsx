@@ -151,6 +151,7 @@ const AdminAlertsPage = () => {
                     if (payload.isAnomaly) {
                       return (
                         <circle
+                          key={`dot-visible-${payload.time}`}
                           cx={cx}
                           cy={cy}
                           r={6}
@@ -160,7 +161,14 @@ const AdminAlertsPage = () => {
                         />
                       );
                     }
-                    return <circle cx={cx} cy={cy} r={0} />;
+                    return (
+                      <circle
+                        key={`dot-hidden-${payload.time}`}
+                        cx={cx}
+                        cy={cy}
+                        r={0}
+                      />
+                    );
                   }}
                 />
               </ComposedChart>

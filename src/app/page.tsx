@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { ArrowRight, Star, Shield, Wifi, Coffee, Sparkles } from 'lucide-react';
 import { MOCK_ROOMS } from '@/data/mockData';
+import RoomCard from '@/components/RoomCard';
+import HeroImageCarousel from '@/components/Carousel';
 
 const features = [
   {
@@ -36,48 +38,62 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
+        {/* Optional: Gradient overlay for a subtle effect */}
         <div className="from-primary/5 absolute inset-0 bg-gradient-to-br to-transparent" />
+
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
-          <div className="animate-slide-up max-w-3xl">
-            <div className="mb-6 flex items-center gap-2">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="fill-warning text-warning h-4 w-4" />
-                ))}
+          {/* Container for content and image, using grid for large screens */}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+            {/* Text Content - remains max-w-3xl for small/medium, spans 1 column on large */}
+            <div className="animate-slide-up max-w-3xl lg:col-span-1 lg:max-w-none">
+              <div className="mb-6 flex items-center gap-2">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="fill-warning text-warning h-4 w-4"
+                    />
+                  ))}
+                </div>
+                <span className="text-muted-foreground text-sm">
+                  Luxury Hospitality
+                </span>
               </div>
-              <span className="text-muted-foreground text-sm">
-                Luxury Hospitality
-              </span>
+
+              <h1 className="text-foreground text-4xl leading-tight font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                Experience the Future of{' '}
+                <span className="text-primary">Hotel Stays</span>
+              </h1>
+
+              <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-relaxed">
+                Seamless digital check-in, smart room controls, and personalized
+                service —
+                <br className="hidden sm:block" />
+                all at your fingertips. Where technology meets timeless
+                elegance.
+              </p>
+
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <Link href="/book" className="hotel-btn-primary text-base">
+                  Book Your Stay
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/guest/stay/b_12345"
+                  className="hotel-btn-secondary text-base"
+                >
+                  Guest Portal Demo
+                </Link>
+              </div>
             </div>
 
-            <h1 className="text-foreground text-4xl leading-tight font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-              Experience the Future of{' '}
-              <span className="text-primary">Hotel Stays</span>
-            </h1>
-
-            <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-relaxed">
-              Seamless digital check-in, smart room controls, and personalized
-              service —
-              <br className="hidden sm:block" />
-              all at your fingertips. Where technology meets timeless elegance.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link href="/book" className="hotel-btn-primary text-base">
-                Book Your Stay
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-              <Link
-                href="/guest/stay/b_12345"
-                className="hotel-btn-secondary text-base"
-              >
-                Guest Portal Demo
-              </Link>
+            {/* Right-Aligned Image Placeholder - NEW */}
+            <div className="mt-12 flex items-center justify-center lg:col-span-1 lg:mt-0">
+              <HeroImageCarousel />
             </div>
           </div>
         </div>
       </section>
-
       {/* Features Grid */}
       <section className="border-border border-t py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -140,7 +156,7 @@ export default function Home() {
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* <RoomCard room={room} /> */}
+                <RoomCard room={room} />
               </div>
             ))}
           </div>
@@ -153,7 +169,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="hotel-card bg-primary py-12 text-center lg:py-16">
@@ -174,7 +189,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-border border-t py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">

@@ -22,7 +22,7 @@ const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
       <div
         onClick={onClick}
         className={cn(
-          'hotel-card-interactive min-w-[100px] p-3',
+          'hotel-card-interactive border-border min-w-[100px] rounded-xl border p-3 shadow-sm transition hover:shadow-md',
           onClick && 'cursor-pointer'
         )}
       >
