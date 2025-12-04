@@ -1,0 +1,323 @@
+@import 'tailwindcss';
+
+/* =========================================
+   1. THEME CONFIGURATION
+   ========================================= */
+@theme {
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Border Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* Colors */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+
+  /* Hotel Colors */
+  --color-hotel-navy: hsl(var(--hotel-navy));
+  --color-hotel-slate: hsl(var(--hotel-slate));
+  --color-hotel-light: hsl(var(--hotel-light));
+
+  /* Sidebar Colors */
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+
+  --breakpoint-2xl: 1400px;
+}
+
+/* =========================================
+   2. KEYFRAMES
+   ========================================= */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* =========================================
+   3. CSS VARIABLES
+   ========================================= */
+@layer base {
+  :root {
+    /* Light Theme */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 27%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 20% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
+
+    --radius: 0.5rem;
+
+    /* Hotel Variables */
+    --hotel-navy: 222 47% 11%;
+    --hotel-slate: 215 25% 27%;
+    --hotel-light: 210 20% 98%;
+    --hotel-card-shadow:
+      0 1px 3px rgba(0 0 0 / 0.04), 0 1px 2px rgba(0 0 0 / 0.04);
+    --hotel-card-shadow-hover:
+      0 4px 6px rgba(0 0 0 / 0.05), 0 2px 4px rgba(0 0 0 / 0.05);
+
+    /* Sidebar */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 213 27% 84%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* =========================================
+   4. COMPONENTS
+   ========================================= */
+@layer components {
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 2rem;
+    @media (width >= 1400px) {
+      max-width: 1400px;
+    }
+  }
+
+  .hotel-card {
+    @apply bg-card border-border rounded-lg border p-6;
+    box-shadow: var(--hotel-card-shadow);
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .hotel-card:hover {
+    box-shadow: var(--hotel-card-shadow-hover);
+  }
+
+  .hotel-btn {
+    @apply focus-visible:ring-ring inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .hotel-btn-primary {
+    @apply focus-visible:ring-ring bg-primary text-primary-foreground inline-flex items-center justify-center rounded-lg px-6 py-3 font-medium transition-all duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .hotel-btn-secondary {
+    @apply focus-visible:ring-ring bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex items-center justify-center rounded-lg px-6 py-3 font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .hotel-btn-ghost {
+    @apply text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:ring-ring inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .hotel-input {
+    @apply border-input bg-card placeholder:text-muted-foreground focus:ring-ring w-full rounded-lg border px-4 py-3 text-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .status-clean {
+    @apply border border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+  .status-occupied {
+    @apply border border-blue-200 bg-blue-50 text-blue-700;
+  }
+  .status-dirty {
+    @apply border border-orange-200 bg-orange-50 text-orange-700;
+  }
+  .status-alert {
+    @apply border border-red-200 bg-red-50 text-red-700;
+  }
+}
+
+/* =========================================
+   5. UTILITIES
+   ========================================= */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out forwards;
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 2s infinite ease-in-out;
+  }
+}
