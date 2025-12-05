@@ -1,45 +1,38 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
-// Replace these with your actual image paths
-// Updated DUMMY_IMAGES for quick testing with placeholders
 const DUMMY_IMAGES = [
-  'https://via.placeholder.com/1200x800?text=Luxury+Suite+1',
-  'https://via.placeholder.com/1200x800?text=Grand+Lobby+2',
-  'https://via.placeholder.com/1200x800?text=Rooftop+Pool+3',
+  'https://images.unsplash.com/photo-1594402919317-9e67dca0a305?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGhvc3BpdGFsaXR5fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1469631423273-6995642a6a40?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGhvc3BpdGFsaXR5fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1683914791874-2dcb78e58e09?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fGhvc3BpdGFsaXR5fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fGhvc3BpdGFsaXR5fGVufDB8fDB8fHww',
 ];
-
-// Note: You must ensure these dummy paths exist in your /public/images folder
-// or update the paths above.
 
 const HeroImageCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Set up a timer to cycle images every 5 seconds (5000ms)
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % DUMMY_IMAGES.length);
+      setCurrentIndex((prev) => (prev + 1) % DUMMY_IMAGES.length);
     }, 5000);
 
-    // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Map the current image URL
-  const currentImageUrl = DUMMY_IMAGES[currentIndex];
+  }, []);
 
   return (
-    <div
-      className="relative h-72 w-full rounded-xl bg-cover bg-center shadow-2xl transition-opacity duration-1000 ease-in-out sm:h-96 lg:h-full"
-      style={{
-        backgroundImage: `url('${currentImageUrl}')`,
-        // Ensures the background image always fills the container
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      {/* Optional: Indicator for image transition (fade effect is handled by transition-opacity) */}
-      <div className="absolute inset-0 rounded-xl bg-black/10" />
+    <div className="relative h-72 w-full overflow-hidden rounded-xl shadow-2xl sm:h-96 lg:h-full">
+      {DUMMY_IMAGES.map((img, i) => (
+        <Image
+          key={i}
+          src={img}
+          alt={`Hero Image ${i + 1}`}
+          fill
+          className={`object-cover transition-opacity duration-1000 ${
+            i === currentIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
     </div>
   );
 };

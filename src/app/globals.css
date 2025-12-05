@@ -136,7 +136,7 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.5;
   }
 }
 
@@ -318,7 +318,7 @@
     animation: scale-in 0.2s ease-out forwards;
   }
   .animate-pulse-soft {
-    animation: pulse-soft 2s infinite ease-in-out;
+    animation: pulse-soft 0.4s infinite ease-in-out;
   }
 }
 /* STAT CARD */
