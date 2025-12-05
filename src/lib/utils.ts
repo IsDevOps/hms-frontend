@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function trimAndAppendEllipsis(str: string, maxLength: number): string {
+export function trimAndAppendEllipsis(str: string, maxLength: number = 20): string {
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength) + '...';
 }
