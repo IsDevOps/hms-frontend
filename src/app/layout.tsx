@@ -53,11 +53,11 @@ const arial = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Medicate',
-    default: 'Medicate',
+    template: '%s | hotel management',
+    default: 'hotel management',
   },
   description: 'Your smart health companion',
-  applicationName: 'Medicate Web',
+  applicationName: 'hotel management Web',
   creator: 'Infostrategy Team',
   // metadataBase: new URL('https://base_url'),
   alternates: {

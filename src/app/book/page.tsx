@@ -9,7 +9,11 @@ import {
   ArrowLeft,
   ArrowRight,
   Loader2,
+  User,
+  Mail,
 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import RoomCard from '@/components/RoomCard';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { MOCK_ROOMS, MOCK_BOOKING_RESPONSE } from '@/data/mockData';
@@ -18,14 +22,15 @@ import { toast } from 'sonner';
 import { DateRange } from 'react-day-picker';
 
 const steps = [
-  { id: 1, name: 'Select Dates', icon: Calendar },
+  { id: 0, name: 'Select Dates', icon: Calendar },
+  { id: 1, name: 'Your details', icon: Calendar },
   { id: 2, name: 'Choose Room', icon: Calendar },
   { id: 3, name: 'Verify ID', icon: Lock },
 ];
 
 const BookingWizardPage = () => {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,25 +40,38 @@ const BookingWizardPage = () => {
     typeof MOCK_BOOKING_RESPONSE | null
   >(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
 
   const availableRooms = MOCK_ROOMS.filter((room) => room.status === 'CLEAN');
 
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1:
+      case 0:
         return dateRange?.from && dateRange?.to;
+      case 1:
+        return (
+          guestName.trim() !== '' &&
+          guestEmail.trim() !== '' &&
+          isValidEmail(guestEmail)
+        );
       case 2:
         return selectedRoom !== null;
       case 3:
@@ -152,8 +170,8 @@ const BookingWizardPage = () => {
 
         {/* Step Content */}
         <div className="animate-fade-in">
-          {/* Step 1: Date Selection */}
-          {currentStep === 1 && (
+          {/* Step 0: Date Selection */}
+          {currentStep === 0 && (
             <div className="hotel-card mx-auto max-w-md">
               <h2 className="text-foreground mb-6 text-center text-xl font-semibold">
                 Select Your Dates
@@ -177,7 +195,59 @@ const BookingWizardPage = () => {
               )}
             </div>
           )}
-
+          {/* Step 1: your details */}
+          {currentStep === 1 && (
+            <div className="hotel-card mx-auto max-w-md">
+              <h2 className="text-foreground mb-6 text-center text-xl font-semibold">
+                Your Details
+              </h2>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="guestName"
+                    className="text-foreground text-sm font-medium"
+                  >
+                    Full Name
+                  </Label>
+                  <div className="relative">
+                    <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                      id="guestName"
+                      type="text"
+                      placeholder="John Anderson"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      className="bg-secondary border-border h-12 pl-10"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="guestEmail"
+                    className="text-foreground text-sm font-medium"
+                  >
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                      id="guestEmail"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      className="bg-secondary border-border h-12 pl-10"
+                    />
+                  </div>
+                  {guestEmail && !isValidEmail(guestEmail) && (
+                    <p className="text-destructive text-xs">
+                      Please enter a valid email
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           {/* Step 2: Room Selection */}
           {currentStep === 2 && (
             <div>
@@ -304,8 +374,8 @@ const BookingWizardPage = () => {
         <div className="mt-8 flex items-center justify-between">
           <button
             onClick={handleBack}
-            disabled={currentStep === 1}
-            className={cn('hotel-btn-ghost', currentStep === 1 && 'invisible')}
+            disabled={currentStep === 0}
+            className={cn('hotel-btn-ghost', currentStep === 0 && 'invisible')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back

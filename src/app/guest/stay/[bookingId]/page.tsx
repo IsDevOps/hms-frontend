@@ -13,11 +13,14 @@ import {
   MessageSquare,
   Check,
   Loader2,
+  ArrowRight,
 } from 'lucide-react';
 import GuestLayout from '@/components/layout/GuestLayout';
 import { MOCK_CURRENT_BOOKING } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const roomControls = [
   { id: 'door', icon: DoorOpen, label: 'Unlock Door', color: 'bg-primary' },
@@ -68,6 +71,8 @@ const GuestStayPage = () => {
   const [activeControls, setActiveControls] = useState<string[]>([]);
   const [loadingControl, setLoadingControl] = useState<string | null>(null);
   const [requestedServices, setRequestedServices] = useState<string[]>([]);
+  const { bookingId } = useParams();
+  const router = useRouter();
 
   const booking = MOCK_CURRENT_BOOKING;
 
@@ -143,6 +148,22 @@ const GuestStayPage = () => {
               Scan at door or use button below
             </p>
           </div>
+        </div>
+        <Button
+          onClick={() => router.push(`/guest/portal/${bookingId}`)}
+          className="w-full py-6 text-base font-medium"
+          size="lg"
+        >
+          Visit Service Portal
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+
+        {/* Room Info */}
+        <div className="text-muted-foreground text-center text-xs">
+          <p>Booking ID: {booking.id}</p>
+          <p className="mt-1">
+            {booking.checkIn} — {booking.checkOut}
+          </p>
         </div>
 
         {/* Room Controls */}

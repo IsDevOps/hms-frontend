@@ -2,7 +2,7 @@ name: Deploy to Swarm
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 env:
   REGISTRY: ghcr.io
@@ -60,11 +60,11 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: [self-hosted, Linux, X64, hms-front-runner ]
+    runs-on: [self-hosted, Linux, X64, hms-front-runner]
     permissions:
       contents: read
       packages: read
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -82,17 +82,17 @@ jobs:
         run: |
           export IMAGE_NAME=ghcr.io/${{ env.IMAGE_NAME }}:latest
           docker stack deploy --with-registry-auth --resolve-image always -c docker-compose.yml ${{ env.STACK_NAME }}
-      
+
       - name: Verify Deployment
         run: |
           echo "Waiting for service to converge..."
           sleep 20
           SERVICE_ID=$(docker service inspect --format="{{.ID}}" ${{ env.STACK_NAME }}_${{ env.SERVICE_NAME }})
-          
+
           # Check if service is running
           REPLICAS=$(docker service inspect --format="{{.Spec.Mode.Replicated.Replicas}}" $SERVICE_ID)
           RUNNING=$(docker service ps --filter "desired-state=running" --format "{{.ID}}" $SERVICE_ID | wc -l)
-          
+
           if [ "$RUNNING" -lt "$REPLICAS" ]; then
             echo "Service failed to start. Showing logs:"
             docker service ps --no-trunc $SERVICE_ID
