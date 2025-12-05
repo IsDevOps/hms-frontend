@@ -42,7 +42,10 @@ import {
   Tooltip,
 } from 'recharts';
 import Link from 'next/link';
-import { useGetadminDashboardQuery } from '@/store/services/admin-dashboard';
+import {
+  useGetadminDashboardQuery,
+  useGetAllRoomsQuery,
+} from '@/store/services/admin-dashboard';
 import { NairaIcon } from '@/components/ui/nairaicon';
 
 const ORDER_STATUSES: {
@@ -84,6 +87,9 @@ const AdminDashboard = () => {
     null
   );
   const { data } = useGetadminDashboardQuery();
+  const { data: roomsData } = useGetAllRoomsQuery();
+  console.log('ccc', roomsData);
+
   console.log('Admin Dashboard Data:', data);
   useEffect(() => {
     const handleFoodOrder = (data: ActiveOrder) => {

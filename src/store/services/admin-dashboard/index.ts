@@ -24,6 +24,19 @@ const admindashboard = api.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getService: build.query<any, void>({
+      query: () => ({
+        url: `${url}/service-requests`,
+        method: 'GET',
+      }),
+    }),
+    createService: build.mutation({
+      query: (payload) => ({
+        url: `${url}/service-requests`,
+        method: 'POST',
+        body: payload,
+      }),
+    }),
 
     // POST
 
@@ -58,4 +71,6 @@ export const {
   useGetRoomsQuery,
   useUploadBookingMutation,
   useGetAllRoomsQuery,
+  useGetServiceQuery,
+  useCreateServiceMutation,
 } = admindashboard;
