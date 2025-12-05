@@ -1,7 +1,7 @@
 import { api } from '../api';
 import { BookingResponse } from './typings';
 
-const url = 'https://api-staging.medicate.health/api/v1';
+export const url = 'https://api-staging.medicate.health/api/v1';
 
 const admindashboard = api.injectEndpoints({
   endpoints: (build) => ({
