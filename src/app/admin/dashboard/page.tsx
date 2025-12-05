@@ -217,10 +217,6 @@ const AdminDashboard = () => {
   };
 
   const handleDispatchMaintenance = () => {
-    // toast({
-    //   title: "Maintenance Dispatched",
-    //   description: `Team sent to Room ${selectedAnomalyRoom}`,
-    // });
     setSelectedAnomalyRoom(null);
   };
 
