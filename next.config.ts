@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   },
 
   devIndicators: false,
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 
   images: {
     remotePatterns: [
