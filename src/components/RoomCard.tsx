@@ -74,12 +74,12 @@ const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
       )}
     >
       {room.imageUrl && (
-        <div className="-mx-6 -mt-6 mb-4 aspect-[4/3] overflow-hidden">
+        <div className="-mx-6 -mt-6 mb-4">
           <Image
             src={room.imageUrl ?? ''}
             alt={`Room ${room.number}`}
             width={400}
-            height={300}
+            height={400}
             className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>

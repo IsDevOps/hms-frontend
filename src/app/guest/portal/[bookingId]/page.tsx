@@ -5,7 +5,6 @@ import {
   Sparkles,
   Wrench,
   Phone,
-  Clock,
   Check,
   Loader2,
   ChefHat,
@@ -45,17 +44,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import { useCreateServiceMutation } from '@/store/services/admin-dashboard';
 
 const ORDER_STATUS_STEPS: { status: OrderStatus; label: string; icon: any }[] =
   [
@@ -100,6 +93,7 @@ const GuestPortal = () => {
   const [scheduledTime, setScheduledTime] = useState<string>('now');
   const [aiRecommendation] = useState(getAIRecommendation());
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+  const [createService] = useCreateServiceMutation();
 
   const booking = MOCK_CURRENT_BOOKING;
 
@@ -159,30 +153,34 @@ const GuestPortal = () => {
     setPendingCartItem(null);
   };
 
-  const handleServiceRequest = (type: string, items: string[]) => {
-    const newOrder: ActiveOrder = {
-      id: Date.now().toString(),
-      roomNumber: booking.roomNumber,
-      type: type as ActiveOrder['type'],
-      items,
-      status: 'RECEIVED',
-      scheduledTime: scheduledTime === 'now' ? null : scheduledTime,
-      createdAt: new Date().toISOString(),
-    };
+  const handleServiceRequest = async (type: string, items: string[]) => {
+    try {
+      const payload = {
+        bookingId: booking?.id ?? 'e2ff85d4-48e4-4c9b-9df8-e5e19a2c05d7',
+        type: type.toUpperCase(),
+        description: items.join(', '),
+        quantity: 1,
+        scheduledTime: scheduledTime === 'now' ? null : scheduledTime,
+      };
+      await createService(payload).unwrap();
 
-    setActiveOrders((prev) => [newOrder, ...prev]);
-    setSelectedServiceType(null);
-    setIsNewRequestOpen(false);
-    setScheduledTime('now');
+      toast({
+        title: 'Request Sent',
+        description: `${type} request submitted successfully!`,
+      });
 
-    toast({ title: 'Request Sent', description: `${type} request submitted` });
-
-    hotelEventEmitter.emit('service-request', {
-      ...newOrder,
-      service: items.join(', '),
-    });
+      // Close modal
+      setSelectedServiceType(null);
+      setIsNewRequestOpen(false);
+      setScheduledTime('now');
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description: err?.data?.message || 'Failed to submit request',
+      });
+    }
   };
-
   const handleAIRecommendationAccept = () => {
     if (aiRecommendation?.item) {
       handleAddToCart(aiRecommendation.item);
@@ -221,19 +219,6 @@ const GuestPortal = () => {
 
   const getStatusIndex = (status: OrderStatus) =>
     ORDER_STATUS_STEPS.findIndex((s) => s.status === status);
-
-  const timeSlots = [
-    { value: 'now', label: 'Now' },
-    { value: '10:00', label: '10:00 AM' },
-    { value: '11:00', label: '11:00 AM' },
-    { value: '12:00', label: '12:00 PM' },
-    { value: '13:00', label: '1:00 PM' },
-    { value: '14:00', label: '2:00 PM' },
-    { value: '15:00', label: '3:00 PM' },
-    { value: '16:00', label: '4:00 PM' },
-    { value: '17:00', label: '5:00 PM' },
-    { value: '18:00', label: '6:00 PM' },
-  ];
 
   const [messages, setMessages] = useState([
     { id: 1, sender: 'ai', text: 'Hello! How can I help you today?' },
@@ -492,21 +477,12 @@ const GuestPortal = () => {
               <label className="text-foreground mb-2 block text-sm font-medium">
                 When?
               </label>
-              <Select value={scheduledTime} onValueChange={setScheduledTime}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((slot) => (
-                    <SelectItem key={slot.value} value={slot.value}>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        {slot.label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <input
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="border-input bg-background focus-visible:ring-primary w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:outline-none"
+              />
             </div>
 
             {/* Service Items */}
