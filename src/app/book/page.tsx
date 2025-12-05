@@ -65,9 +65,6 @@ const BookingWizardPage = () => {
   const { data } = useGetRoomsQuery();
   const availableRooms = data || [];
 
-  // ───────────────────────────────────────────────────────────────────────
-  // Helpers
-  // ───────────────────────────────────────────────────────────────────────
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -90,9 +87,6 @@ const BookingWizardPage = () => {
   const handleNext = () => currentStep < 3 && setCurrentStep((s) => s + 1);
   const handleBack = () => currentStep > 0 && setCurrentStep((s) => s - 1);
 
-  // ───────────────────────────────────────────────────────────────────────
-  // File handling
-  // ───────────────────────────────────────────────────────────────────────
   const handleFileDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
@@ -127,9 +121,6 @@ const BookingWizardPage = () => {
     setVerificationResult(null);
   };
 
-  // ───────────────────────────────────────────────────────────────────────
-  // Final booking + verification (only on button click)
-  // ───────────────────────────────────────────────────────────────────────
   const handleCompleteBooking = async () => {
     if (!dateRange?.from || !dateRange?.to || !selectedRoom || !uploadedFile) {
       toast.error('Please complete all steps.');
@@ -198,49 +189,58 @@ const BookingWizardPage = () => {
     <div className="bg-background min-h-screen">
       <div className="mx-auto max-w-5xl px-4 py-12">
         {/* Progress */}
-        <nav aria-label="Progress" className="mb-12">
-          <ol className="flex items-center justify-center gap-8">
-            {steps.map((step, idx) => (
-              <li key={step.id} className="flex items-center">
-                <div
-                  className={cn(
-                    'white-space-nowrap flex items-center gap-3 rounded-full px-5 transition-all',
-                    currentStep === step.id &&
-                      'bg-primary text-primary-foreground',
-                    currentStep > step.id && 'bg-green-100 text-green-700',
-                    currentStep < step.id && 'text-muted-foreground'
-                  )}
-                >
-                  <div
-                    className={cn(
-                      'white-space-nowrap flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold',
-                      currentStep > step.id
-                        ? 'border-green-500 bg-green-500 text-white'
-                        : currentStep === step.id
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-muted-foreground'
-                    )}
-                  >
-                    {currentStep > step.id ? (
-                      <Check className="h-5 w-5" />
-                    ) : (
-                      idx + 1
-                    )}
+        {/* Progress Steps */}
+        <nav className="mb-10">
+          <ol className="mx-auto flex max-w-3xl items-center justify-between">
+            {steps.map((step, idx) => {
+              const isActive = currentStep === idx;
+              const isCompleted = currentStep > idx;
+
+              return (
+                <li key={idx} className="flex flex-1 items-center">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        'flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition-all',
+                        isCompleted &&
+                          'border-green-500 bg-green-500 text-white',
+                        isActive &&
+                          'bg-primary border-primary text-primary-foreground shadow-md',
+                        !isCompleted &&
+                          !isActive &&
+                          'border-muted-foreground text-muted-foreground'
+                      )}
+                    >
+                      {isCompleted ? <Check className="h-4 w-4" /> : idx + 1}
+                    </div>
+
+                    <span
+                      className={cn(
+                        'hidden text-sm font-medium md:block',
+                        isActive
+                          ? 'text-primary'
+                          : isCompleted
+                            ? 'text-green-600'
+                            : 'text-muted-foreground'
+                      )}
+                    >
+                      {step.name}
+                    </span>
                   </div>
-                  <span className="hidden font-medium sm:block">
-                    {step.name}
-                  </span>
-                </div>
-                {idx < steps.length - 1 && (
-                  <div
-                    className={cn(
-                      'mx-4 h-0.5 w-20',
-                      currentStep > step.id ? 'bg-green-500' : 'bg-border'
-                    )}
-                  />
-                )}
-              </li>
-            ))}
+
+                  {idx < steps.length - 1 && (
+                    <div className="mx-3 flex-1">
+                      <div
+                        className={cn(
+                          'h-[2px] w-full rounded-full',
+                          isCompleted ? 'bg-green-500' : 'bg-border'
+                        )}
+                      />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </nav>
 
