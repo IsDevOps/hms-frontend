@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import StatCard from '@/components/StatCard';
 import {
-  MOCK_ROOMS,
   MOCK_LIVE_EVENTS,
   MOCK_DASHBOARD_STATS,
   MOCK_CHART_DATA,
@@ -77,6 +76,7 @@ const statusColors = {
   CLEAN: 'bg-success',
   OCCUPIED: 'bg-blue-500',
   DIRTY: 'bg-warning',
+  AVAILABLE: 'bg-warning',
 };
 
 const AdminDashboard = () => {
@@ -423,37 +423,46 @@ const AdminDashboard = () => {
               </Link>
             </div>
             <div className="grid grid-cols-5 gap-2">
-              {MOCK_ROOMS.map((room) => (
-                <button
-                  key={room.id}
-                  onClick={() =>
-                    handleRoomClick(room.number, !!room.hasAnomaly)
-                  }
-                  className={cn(
-                    'rounded-lg border p-2 text-center transition-all duration-10 hover:scale-105',
-                    room.hasAnomaly
-                      ? 'border-destructive bg-destructive/10 animate-pulse cursor-pointer'
-                      : 'border-border bg-card cursor-default'
-                  )}
-                >
-                  <div
-                    className={cn(
-                      'mx-auto mb-1 h-3 w-3 rounded-full',
-                      room.hasAnomaly
-                        ? 'bg-destructive'
-                        : statusColors[room.status]
-                    )}
-                  />
-                  <p className="text-foreground text-xs font-medium">
-                    {room.number}
-                  </p>
-                  {room.guestName && (
-                    <p className="text-muted-foreground truncate text-[8px]">
-                      {room.guestName.split(' ')[0]}
-                    </p>
-                  )}
-                </button>
-              ))}
+              {roomsData &&
+                roomsData.map((room: any) => {
+                  const hasAnomaly =
+                    room.status === 'MAINTENANCE' || room.hasAnomaly;
+
+                  return (
+                    <button
+                      key={room.id}
+                      onClick={() => handleRoomClick(room.number, hasAnomaly)}
+                      className={cn(
+                        'rounded-lg border p-2 text-center transition-all duration-150 hover:scale-105',
+                        hasAnomaly
+                          ? 'border-destructive bg-destructive/10 animate-pulse cursor-pointer'
+                          : 'border-border bg-card cursor-default'
+                      )}
+                    >
+                      {/* Status Dot */}
+                      <div
+                        className={cn(
+                          'mx-auto mb-1 h-3 w-3 rounded-full',
+                          hasAnomaly
+                            ? 'bg-destructive'
+                            : statusColors[
+                                room.status as keyof typeof statusColors
+                              ] || 'bg-secondary'
+                        )}
+                      />
+
+                      <p className="text-foreground text-xs font-medium">
+                        {room.number}
+                      </p>
+
+                      {room.guestName && (
+                        <p className="text-muted-foreground truncate text-[8px]">
+                          {room.guestName.split(' ')[0]}
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
             </div>
 
             {/* Legend */}

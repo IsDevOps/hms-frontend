@@ -30,6 +30,12 @@ const admindashboard = api.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getGraph: build.query<any, string>({
+      query: (roomId) => ({
+        url: `${url}/admin/anomalies/${roomId}`,
+        method: 'GET',
+      }),
+    }),
     createService: build.mutation({
       query: (payload) => ({
         url: `${url}/service-requests`,
@@ -73,4 +79,5 @@ export const {
   useGetAllRoomsQuery,
   useGetServiceQuery,
   useCreateServiceMutation,
+  useGetGraphQuery,
 } = admindashboard;

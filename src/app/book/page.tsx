@@ -258,7 +258,7 @@ const BookingWizardPage = () => {
                 onSelect={setDateRange}
                 numberOfMonths={1}
                 disabled={(date) => date < new Date()}
-                className="border-border pointer-events-auto mx-auto rounded-lg border"
+                className="pointer-events-auto mx-auto ml-[5rem]"
               />
               {dateRange?.from && dateRange?.to && (
                 <div className="bg-secondary mt-6 rounded-lg p-4 text-center">
