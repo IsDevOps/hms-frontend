@@ -55,6 +55,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build-and-push
@@ -79,7 +81,7 @@ jobs:
       - name: Deploy to Swarm
         run: |
           export IMAGE_NAME=ghcr.io/${{ env.IMAGE_NAME }}:latest
-          docker stack deploy --with-registry-auth -c docker-compose.yml ${{ env.STACK_NAME }}
+          docker stack deploy --with-registry-auth --resolve-image always -c docker-compose.yml ${{ env.STACK_NAME }}
       
       - name: Verify Deployment
         run: |
