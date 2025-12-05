@@ -23,11 +23,15 @@ const StatCard = ({
     if (typeof val === 'string') return val;
     switch (format) {
       case 'currency':
-        return new Intl.NumberFormat('en-US', {
+        // --- START OF CHANGE: Updated currency to NGN ---
+        return new Intl.NumberFormat('en-NG', {
+          // 'en-NG' locale for Nigeria
           style: 'currency',
-          currency: 'USD',
+          currency: 'NGN', // Nigerian Naira currency code
+          // Note: NGN typically has 0 decimal places for whole numbers
           minimumFractionDigits: 0,
         }).format(val);
+      // --- END OF CHANGE ---
       case 'percent':
         return `${val}%`;
       default:

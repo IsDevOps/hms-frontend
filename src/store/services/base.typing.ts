@@ -33,10 +33,3 @@ export interface ErrorData {
   timestamp: string;
   path: string;
 }
-
-export type UserRoleTyping =
-  | 'INDIVIDUAL_USER'
-  | 'PHARMACY'
-  | 'HEALTHCARE_PROVIDER'
-  | 'HMO'
-  | 'HEALTHCARE_PRACTITIONER';

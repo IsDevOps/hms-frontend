@@ -112,30 +112,6 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
     description: 'Mixed greens with citrus vinaigrette',
     category: 'food',
   },
-  {
-    id: 'coke',
-    name: 'Ice Cold Coke',
-    price: 2,
-    image: '/images/coke.jpg',
-    description: 'Refreshing classic',
-    category: 'beverage',
-  },
-  {
-    id: 'cappuccino',
-    name: 'Cappuccino',
-    price: 5,
-    image: '/images/coke.jpg',
-    description: 'Rich espresso with steamed milk',
-    category: 'beverage',
-  },
-  {
-    id: 'water',
-    name: 'Mineral Water',
-    price: 3,
-    image: '/images/coke.jpg',
-    description: 'Premium sparkling water',
-    category: 'beverage',
-  },
 ];
 
 // AI Recommendations based on time of day

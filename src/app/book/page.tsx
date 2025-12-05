@@ -1,6 +1,7 @@
 'use client';
+
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import {
   Calendar,
   Check,
@@ -11,155 +12,230 @@ import {
   Loader2,
   User,
   Mail,
+  X,
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import RoomCard from '@/components/RoomCard';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { MOCK_ROOMS, MOCK_BOOKING_RESPONSE } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { DateRange } from 'react-day-picker';
+import { useGetRoomsQuery } from '@/store/services/admin-dashboard';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+type VerificationResult = {
+  success: boolean;
+  extractedName?: string;
+  fraudScore?: number;
+  aiAnalysis?: string;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────────────────────
 const steps = [
   { id: 0, name: 'Select Dates', icon: Calendar },
-  { id: 1, name: 'Your details', icon: Calendar },
+  { id: 1, name: 'Your Details', icon: User },
   { id: 2, name: 'Choose Room', icon: Calendar },
   { id: 3, name: 'Verify ID', icon: Lock },
-];
+] as const;
+
+const BOOKING_API_URL = 'https://api-staging.medicate.health/api/v1/bookings';
 
 const BookingWizardPage = () => {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<
-    typeof MOCK_BOOKING_RESPONSE | null
-  >(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
-  const availableRooms = MOCK_ROOMS.filter((room) => room.status === 'CLEAN');
+  const [verificationResult, setVerificationResult] =
+    useState<VerificationResult | null>(null);
 
+  const [uploadStatus, setUploadStatus] = useState<
+    'idle' | 'uploading' | 'success' | 'error'
+  >('idle');
+
+  const { data } = useGetRoomsQuery();
+  const availableRooms = data || [];
+
+  // ───────────────────────────────────────────────────────────────────────
+  // Helpers
+  // ───────────────────────────────────────────────────────────────────────
   const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const canProceed = () => {
+  const canProceed = (): boolean => {
     switch (currentStep) {
       case 0:
-        return dateRange?.from && dateRange?.to;
+        return !!dateRange?.from && !!dateRange?.to;
       case 1:
-        return (
-          guestName.trim() !== '' &&
-          guestEmail.trim() !== '' &&
-          isValidEmail(guestEmail)
-        );
+        return guestName.trim() !== '' && isValidEmail(guestEmail);
       case 2:
         return selectedRoom !== null;
       case 3:
-        return verificationResult?.success;
+        return uploadedFile !== null;
       default:
         return false;
     }
   };
 
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
+  const handleNext = () => currentStep < 3 && setCurrentStep((s) => s + 1);
+  const handleBack = () => currentStep > 0 && setCurrentStep((s) => s - 1);
+
+  // ───────────────────────────────────────────────────────────────────────
+  // File handling
+  // ───────────────────────────────────────────────────────────────────────
+  const handleFileDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
+
     const file = e.dataTransfer.files[0];
     if (
       file &&
       (file.type.startsWith('image/') || file.type === 'application/pdf')
     ) {
       setUploadedFile(file);
-      handleVerification(file);
+      setVerificationResult(null);
+    } else {
+      toast.error('Please upload an image or PDF.');
     }
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (
+      file &&
+      (file.type.startsWith('image/') || file.type === 'application/pdf')
+    ) {
       setUploadedFile(file);
-      handleVerification(file);
+      setVerificationResult(null);
+    } else if (file) {
+      toast.error('Only images and PDFs are allowed.');
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleVerification = async (_file: File) => {
-    setIsVerifying(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setVerificationResult(MOCK_BOOKING_RESPONSE);
-    setIsVerifying(false);
+  const removeFile = () => {
+    setUploadedFile(null);
+    setVerificationResult(null);
   };
 
+  // ───────────────────────────────────────────────────────────────────────
+  // Final booking + verification (only on button click)
+  // ───────────────────────────────────────────────────────────────────────
   const handleCompleteBooking = async () => {
-    toast.success('Booking Confirmed!', {
-      description: `Your reservation for Room ${availableRooms.find((r) => r.id === selectedRoom)?.number} has been confirmed.`,
-    });
-    router.push(`/guest/stay/${MOCK_BOOKING_RESPONSE.bookingId}`);
+    if (!dateRange?.from || !dateRange?.to || !selectedRoom || !uploadedFile) {
+      toast.error('Please complete all steps.');
+      return;
+    }
+
+    setUploadStatus('uploading');
+    setVerificationResult(null);
+
+    const formData = new FormData();
+    formData.append('guestName', guestName);
+    formData.append('guestEmail', guestEmail);
+    formData.append('roomId', selectedRoom);
+    formData.append('checkInDate', dateRange.from.toISOString());
+    formData.append('checkOutDate', dateRange.to.toISOString());
+    formData.append('file', uploadedFile);
+
+    try {
+      const response = await axios.post(BOOKING_API_URL, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const { success, aiReport, message } = response.data;
+
+      if (success) {
+        const fraudScore = aiReport?.fraud?.fraudScore;
+        let successMessage = message || 'Booking Confirmed!';
+
+        if (fraudScore < 60) {
+          successMessage += ` (Fraud Score: ${fraudScore})`;
+        }
+
+        setVerificationResult({
+          success: true,
+          extractedName: guestName,
+          fraudScore: fraudScore,
+          aiAnalysis:
+            'ID photo matches guest information. No tampering detected.',
+        });
+        setUploadStatus('success');
+        toast.success(successMessage);
+      } else {
+        throw new Error(message || 'Booking failed');
+      }
+    } catch (err: any) {
+      const fraudScore = err.response?.data?.aiReport?.fraud?.fraudScore;
+      let errorMessage =
+        err.response?.data?.message || err.message || 'Unknown error';
+
+      if (fraudScore >= 60) {
+        errorMessage += ` (Fraud Score: ${fraudScore})`;
+      }
+
+      setUploadStatus('error');
+      setVerificationResult({
+        success: false,
+        aiAnalysis: 'ID verification failed. Please try again.',
+      });
+      toast.error('Booking failed', {
+        description: errorMessage,
+      });
+    }
   };
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        {/* Progress Steps */}
-        <nav aria-label="Progress" className="mb-8 lg:mb-12">
-          <ol className="flex items-center justify-center">
-            {steps.map((step, index) => (
+      <div className="mx-auto max-w-5xl px-4 py-12">
+        {/* Progress */}
+        <nav aria-label="Progress" className="mb-12">
+          <ol className="flex items-center justify-center gap-8">
+            {steps.map((step, idx) => (
               <li key={step.id} className="flex items-center">
                 <div
                   className={cn(
-                    'flex items-center gap-3 rounded-full px-4 py-2 transition-colors',
+                    'white-space-nowrap flex items-center gap-3 rounded-full px-5 transition-all',
                     currentStep === step.id &&
                       'bg-primary text-primary-foreground',
-                    currentStep > step.id && 'bg-success/10 text-success',
+                    currentStep > step.id && 'bg-green-100 text-green-700',
                     currentStep < step.id && 'text-muted-foreground'
                   )}
                 >
-                  <span
+                  <div
                     className={cn(
-                      'flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-medium',
-                      currentStep === step.id &&
-                        'border-primary-foreground bg-primary-foreground/20',
-                      currentStep > step.id &&
-                        'border-success bg-success text-success-foreground',
-                      currentStep < step.id && 'border-current'
+                      'white-space-nowrap flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold',
+                      currentStep > step.id
+                        ? 'border-green-500 bg-green-500 text-white'
+                        : currentStep === step.id
+                          ? 'border-primary bg-primary text-white'
+                          : 'border-muted-foreground'
                     )}
                   >
                     {currentStep > step.id ? (
-                      <Check className="h-4 w-4" />
+                      <Check className="h-5 w-5" />
                     ) : (
-                      step.id
+                      idx + 1
                     )}
-                  </span>
-                  <span className="hidden text-sm font-medium sm:block">
+                  </div>
+                  <span className="hidden font-medium sm:block">
                     {step.name}
                   </span>
                 </div>
-                {index < steps.length - 1 && (
+                {idx < steps.length - 1 && (
                   <div
                     className={cn(
-                      'mx-2 h-0.5 w-8 sm:w-16',
-                      currentStep > step.id ? 'bg-success' : 'bg-border'
+                      'mx-4 h-0.5 w-20',
+                      currentStep > step.id ? 'bg-green-500' : 'bg-border'
                     )}
                   />
                 )}
@@ -169,8 +245,8 @@ const BookingWizardPage = () => {
         </nav>
 
         {/* Step Content */}
-        <div className="animate-fade-in">
-          {/* Step 0: Date Selection */}
+        <div className="mb-12">
+          {/* Step 0 – Dates */}
           {currentStep === 0 && (
             <div className="hotel-card mx-auto max-w-md">
               <h2 className="text-foreground mb-6 text-center text-xl font-semibold">
@@ -195,74 +271,61 @@ const BookingWizardPage = () => {
               )}
             </div>
           )}
-          {/* Step 1: your details */}
+
+          {/* Step 1 – Details */}
           {currentStep === 1 && (
-            <div className="hotel-card mx-auto max-w-md">
-              <h2 className="text-foreground mb-6 text-center text-xl font-semibold">
-                Your Details
-              </h2>
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="guestName"
-                    className="text-foreground text-sm font-medium"
-                  >
-                    Full Name
-                  </Label>
-                  <div className="relative">
-                    <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                      id="guestName"
-                      type="text"
-                      placeholder="John Anderson"
-                      value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
-                      className="bg-secondary border-border h-12 pl-10"
-                    />
-                  </div>
+            <div className="mx-auto max-w-md space-y-8">
+              <h2 className="text-center text-3xl font-bold">Your Details</h2>
+              <div className="space-y-6">
+                <Label htmlFor="name">Full Name</Label>
+                <div className="relative mt-2">
+                  <User className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                  <Input
+                    id="name"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="John Doe"
+                    className="h-12 pl-11"
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="guestEmail"
-                    className="text-foreground text-sm font-medium"
-                  >
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                      id="guestEmail"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      className="bg-secondary border-border h-12 pl-10"
-                    />
-                  </div>
-                  {guestEmail && !isValidEmail(guestEmail) && (
-                    <p className="text-destructive text-xs">
-                      Please enter a valid email
-                    </p>
-                  )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative mt-2">
+                  <Mail className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={guestEmail}
+                    onChange={(e) => setGuestEmail(e.target.value)}
+                    placeholder="john@example.com"
+                    className="h-12 pl-11"
+                  />
                 </div>
+                {guestEmail && !isValidEmail(guestEmail) && (
+                  <p className="text-destructive text-sm">
+                    Please enter a valid email address
+                  </p>
+                )}
               </div>
             </div>
           )}
-          {/* Step 2: Room Selection */}
+
+          {/* Step 2 – Room */}
           {currentStep === 2 && (
             <div>
-              <h2 className="text-foreground mb-6 text-center text-xl font-semibold">
+              <h2 className="mb-10 text-center text-3xl font-bold">
                 Choose Your Room
               </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {availableRooms.map((room) => (
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {availableRooms.map((room: any) => (
                   <div
                     key={room.id}
                     onClick={() => setSelectedRoom(room.id)}
                     className={cn(
-                      'cursor-pointer transition-all duration-200',
+                      'cursor-pointer overflow-hidden rounded-xl transition-all',
                       selectedRoom === room.id &&
-                        'ring-primary rounded-lg ring-2 ring-offset-2'
+                        'ring-primary ring-4 ring-offset-4'
                     )}
                   >
                     <RoomCard room={room} />
@@ -272,17 +335,75 @@ const BookingWizardPage = () => {
             </div>
           )}
 
-          {/* Step 3: ID Verification */}
+          {/* Step 3 – ID Upload */}
           {currentStep === 3 && (
-            <div className="hotel-card mx-auto max-w-md">
-              <h2 className="text-foreground mb-2 text-center text-xl font-semibold">
-                Secure ID Verification
+            <div className="mx-auto max-w-lg">
+              <h2 className="mb-4 text-center text-3xl font-bold">
+                Verify Your Identity
               </h2>
-              <p className="text-muted-foreground mb-6 text-center text-sm">
-                Upload your government-issued ID for secure verification
+              <p className="text-muted-foreground mb-10 text-center">
+                Upload a government-issued ID for security
               </p>
 
-              {!verificationResult && (
+              {uploadedFile ? (
+                <div className="space-y-8">
+                  {/* Uploaded file preview */}
+                  <div className="bg-secondary flex items-center justify-between rounded-xl p-5">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-primary/10 rounded-lg p-3">
+                        <Upload className="text-primary h-7 w-7" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{uploadedFile.name}</p>
+                        <p className="text-muted-foreground text-sm">
+                          {(uploadedFile.size / 1024).toFixed(0)} KB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={removeFile}
+                      className="text-destructive hover:bg-destructive/10 rounded p-2"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Verification result – only after submit */}
+                  {verificationResult && (
+                    <div
+                      className={cn(
+                        'rounded-xl p-6 text-center',
+                        verificationResult.success
+                          ? 'border-2 border-green-300 bg-green-50'
+                          : 'border-2 border-red-300 bg-red-50'
+                      )}
+                    >
+                      {verificationResult.success ? (
+                        <>
+                          <Check className="mx-auto mb-4 h-14 w-14 text-green-600" />
+                          <p className="text-2xl font-bold text-green-700">
+                            ID Verified!
+                          </p>
+                          <p className="mt-2 text-green-600">
+                            {verificationResult.aiAnalysis}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <X className="mx-auto mb-4 h-14 w-14 text-red-600" />
+                          <p className="text-2xl font-bold text-red-700">
+                            Verification Failed
+                          </p>
+                          <p className="mt-2 text-red-600">
+                            {verificationResult.aiAnalysis}
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Upload zone */
                 <div
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -291,79 +412,29 @@ const BookingWizardPage = () => {
                   onDragLeave={() => setIsDragging(false)}
                   onDrop={handleFileDrop}
                   className={cn(
-                    'rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200',
-                    isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border',
-                    isVerifying && 'pointer-events-none opacity-60'
+                    'rounded-xl border-2 border-dashed p-16 text-center transition-colors',
+                    isDragging ? 'border-primary bg-primary/5' : 'border-border'
                   )}
                 >
-                  {isVerifying ? (
-                    <div className="space-y-4">
-                      <Loader2 className="text-primary mx-auto h-12 w-12 animate-spin" />
-                      <p className="text-muted-foreground text-sm">
-                        Verifying your ID...
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <Lock className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                      <p className="text-foreground mb-2 font-medium">
-                        Drag & drop your ID here
-                      </p>
-                      <p className="text-muted-foreground mb-4 text-sm">
-                        or click to browse files
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                        id="id-upload"
-                      />
-                      <label
-                        htmlFor="id-upload"
-                        className="hotel-btn-secondary inline-flex cursor-pointer"
-                      >
-                        <Upload className="mr-2 h-4 w-4" />
-                        Select File
-                      </label>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {verificationResult && (
-                <div className="animate-scale-in space-y-4">
-                  <div className="bg-success/10 flex items-center justify-center gap-3 rounded-xl p-4">
-                    <div className="bg-success flex h-10 w-10 items-center justify-center rounded-full">
-                      <Check className="text-success-foreground h-5 w-5" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-foreground font-semibold">
-                        ID Verified
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        {verificationResult.extractedName}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-secondary rounded-xl p-4">
-                    <p className="text-muted-foreground mb-2 text-xs tracking-wide uppercase">
-                      AI Analysis
-                    </p>
-                    <p className="text-foreground text-sm">
-                      {verificationResult.aiAnalysis}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Fraud Score</span>
-                    <span className="text-success font-medium">
-                      {verificationResult.fraudScore}/100 (Low Risk)
-                    </span>
-                  </div>
+                  <Lock className="text-muted-foreground mx-auto mb-6 h-16 w-16" />
+                  <p className="mb-2 text-xl font-medium">Drop your ID here</p>
+                  <p className="text-muted-foreground mb-6">
+                    or click to browse
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleFileSelect}
+                    id="id-upload"
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="id-upload"
+                    className="hotel-btn-secondary inline-flex cursor-pointer items-center"
+                  >
+                    <Upload className="mr-2 h-5 w-5" />
+                    Choose File
+                  </label>
                 </div>
               )}
             </div>
@@ -371,33 +442,40 @@ const BookingWizardPage = () => {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <button
             onClick={handleBack}
             disabled={currentStep === 0}
-            className={cn('hotel-btn-ghost', currentStep === 0 && 'invisible')}
+            className={cn(
+              'hotel-btn-ghost flex items-center',
+              currentStep === 0 && 'invisible'
+            )}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            <ArrowLeft className="mr-2 h-5 w-5" /> Back
           </button>
 
           {currentStep < 3 ? (
             <button
               onClick={handleNext}
               disabled={!canProceed()}
-              className="hotel-btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+              className="hotel-btn-primary flex items-center disabled:opacity-50"
             >
-              Continue
-              <ArrowRight className="ml-2 h-4 w-4" />
+              Continue <ArrowRight className="ml-2 h-5 w-5" />
             </button>
           ) : (
             <button
               onClick={handleCompleteBooking}
-              disabled={!canProceed()}
-              className="hotel-btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!uploadedFile || uploadStatus === 'uploading'}
+              className="hotel-btn-primary flex min-w-[200px] items-center justify-center gap-3"
             >
-              Complete Booking
-              <Check className="ml-2 h-4 w-4" />
+              {uploadStatus === 'uploading' ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Complete Booking'
+              )}
             </button>
           )}
         </div>
@@ -405,5 +483,4 @@ const BookingWizardPage = () => {
     </div>
   );
 };
-
 export default BookingWizardPage;

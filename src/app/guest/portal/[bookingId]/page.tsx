@@ -11,6 +11,9 @@ import {
   ChefHat,
   Truck,
   Plus,
+  Bot,
+  User,
+  Send,
 } from 'lucide-react';
 import GuestLayout from '@/components/layout/GuestLayout';
 import {
@@ -50,6 +53,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 
 const ORDER_STATUS_STEPS: { status: OrderStatus; label: string; icon: any }[] =
@@ -94,6 +99,7 @@ const GuestPortal = () => {
   const [pendingCartItem, setPendingCartItem] = useState<MenuItem | null>(null);
   const [scheduledTime, setScheduledTime] = useState<string>('now');
   const [aiRecommendation] = useState(getAIRecommendation());
+  const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
 
   const booking = MOCK_CURRENT_BOOKING;
 
@@ -153,33 +159,6 @@ const GuestPortal = () => {
     setPendingCartItem(null);
   };
 
-  const handlePlaceFoodOrder = () => {
-    if (cart.length === 0) return;
-
-    const newOrder: ActiveOrder = {
-      id: Date.now().toString(),
-      roomNumber: booking.roomNumber,
-      type: 'food',
-      items: cart.map((c) => c.name),
-      status: 'RECEIVED',
-      scheduledTime: scheduledTime === 'now' ? null : scheduledTime,
-      createdAt: new Date().toISOString(),
-      total: cart.reduce((sum, item) => sum + item.price, 0),
-    };
-
-    setActiveOrders((prev) => [newOrder, ...prev]);
-    setIsFoodMenuOpen(false);
-    setCart([]);
-    setScheduledTime('now');
-
-    toast({
-      title: 'Order Placed!',
-      description: 'Your order is being prepared',
-    });
-
-    hotelEventEmitter.emit('food-order', newOrder);
-  };
-
   const handleServiceRequest = (type: string, items: string[]) => {
     const newOrder: ActiveOrder = {
       id: Date.now().toString(),
@@ -213,8 +192,32 @@ const GuestPortal = () => {
       setIsNewRequestOpen(true);
     }
   };
+  const handlePlaceFoodOrder = () => {
+    if (cart.length === 0) return;
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const newOrder: ActiveOrder = {
+      id: Date.now().toString(),
+      roomNumber: booking.roomNumber,
+      type: 'food',
+      items: cart.map((c) => c.name),
+      status: 'RECEIVED',
+      scheduledTime: scheduledTime === 'now' ? null : scheduledTime,
+      createdAt: new Date().toISOString(),
+      total: cart.reduce((sum, item) => sum + item.price, 0),
+    };
+
+    setActiveOrders((prev) => [newOrder, ...prev]);
+    setIsFoodMenuOpen(false);
+    setCart([]);
+    setScheduledTime('now');
+
+    toast({
+      title: 'Order Placed!',
+      description: 'Your order is being prepared',
+    });
+
+    hotelEventEmitter.emit('food-order', newOrder);
+  };
 
   const getStatusIndex = (status: OrderStatus) =>
     ORDER_STATUS_STEPS.findIndex((s) => s.status === status);
@@ -232,6 +235,28 @@ const GuestPortal = () => {
     { value: '18:00', label: '6:00 PM' },
   ];
 
+  const [messages, setMessages] = useState([
+    { id: 1, sender: 'ai', text: 'Hello! How can I help you today?' },
+  ]);
+  const [input, setInput] = useState('');
+  const sendMessage = () => {
+    if (!input.trim()) return;
+
+    const userMsg = { id: Date.now(), sender: 'user', text: input };
+    setMessages((prev) => [...prev, userMsg]);
+
+    setInput('');
+
+    // Mock AI reply
+    setTimeout(() => {
+      const aiReply = {
+        id: Date.now() + 1,
+        sender: 'ai',
+        text: "Thanks for your message! I'm here to help.",
+      };
+      setMessages((prev) => [...prev, aiReply]);
+    }, 600);
+  };
   return (
     <GuestLayout title="Service Portal">
       <div className="animate-fade-in space-y-6">
@@ -513,35 +538,66 @@ const GuestPortal = () => {
       </Dialog>
 
       {/* Food Menu Dialog */}
+
       <Dialog open={isFoodMenuOpen} onOpenChange={setIsFoodMenuOpen}>
-        <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
+        <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Room Service Menu</DialogTitle>
+            <DialogTitle>Ask our AI Assistant</DialogTitle>
           </DialogHeader>
 
-          {/* Time Selection */}
-          <div className="mt-2">
-            <label className="text-foreground mb-2 block text-sm font-medium">
-              Delivery Time
-            </label>
-            <Select value={scheduledTime} onValueChange={setScheduledTime}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {timeSlots.map((slot) => (
-                  <SelectItem key={slot.value} value={slot.value}>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      {slot.label}
+          {/* SCROLL AREA — Only messages scroll */}
+          <ScrollArea className="bg-muted/30 flex-1 rounded-md border p-4 pr-3">
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex items-start gap-3 ${
+                    msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  {msg.sender === 'ai' && (
+                    <div className="bg-primary/10 rounded-full p-2">
+                      <Bot size={18} />
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  )}
+
+                  <div
+                    className={`max-w-[75%] rounded-xl p-3 text-sm shadow ${
+                      msg.sender === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary'
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+
+                  {msg.sender === 'user' && (
+                    <div className="bg-primary/10 rounded-full p-2">
+                      <User size={18} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* INPUT BAR — stays fixed */}
+          <div className="mt-3 flex items-center gap-2">
+            <Input
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            />
+            <Button onClick={sendMessage} size="icon">
+              <Send size={16} />
+            </Button>
           </div>
 
-          <div className="mt-4 space-y-4">
+          {/* TOP SUGGESTIONS — now scrollable */}
+          <ScrollArea className="mt-4 max-h-[200px] space-y-4 overflow-y-auto pr-2">
+            <h6 className="font-medium">Our Top Suggestions</h6>
+
             {MOCK_MENU_ITEMS.map((item) => (
               <div
                 key={item.id}
@@ -554,16 +610,18 @@ const GuestPortal = () => {
                     className="object-contain"
                     width={170}
                     height={170}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
+                    onError={(e) =>
+                      ((e.target as HTMLImageElement).style.display = 'none')
+                    }
                   />
                 </div>
+
                 <div className="min-w-0 flex-1">
                   <h4 className="text-foreground font-medium">{item.name}</h4>
                   <p className="text-muted-foreground mb-2 text-xs">
                     {item.description}
                   </p>
+
                   <div className="flex items-center justify-between">
                     <span className="text-foreground font-semibold">
                       ${item.price}
@@ -580,27 +638,28 @@ const GuestPortal = () => {
                 </div>
               </div>
             ))}
-          </div>
 
-          {/* Cart Summary */}
-          {cart.length > 0 && (
-            <div className="border-border mt-6 space-y-3 border-t pt-4">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground font-medium">
-                  Your Order ({cart.length})
-                </span>
-                <span className="text-foreground font-semibold">
-                  ${cartTotal}
-                </span>
+            {cart.length > 0 && (
+              <div className="border-border mt-4 space-y-3 border-t pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground font-medium">
+                    Your Order ({cart.length})
+                  </span>
+                  <span className="text-foreground font-semibold">
+                    ${cartTotal}
+                  </span>
+                </div>
+
+                <p className="text-muted-foreground text-sm">
+                  {cart.map((item) => item.name).join(', ')}
+                </p>
+
+                <Button onClick={handlePlaceFoodOrder} className="w-full">
+                  Place Order
+                </Button>
               </div>
-              <div className="text-muted-foreground text-sm">
-                {cart.map((item) => item.name).join(', ')}
-              </div>
-              <Button onClick={handlePlaceFoodOrder} className="w-full">
-                Place Order
-              </Button>
-            </div>
-          )}
+            )}
+          </ScrollArea>
         </DialogContent>
       </Dialog>
 

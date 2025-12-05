@@ -1,6 +1,17 @@
 import { cn } from '@/lib/utils';
-import { Room } from '@/data/mockData';
 import Image from 'next/image';
+
+export interface Room {
+  id: string;
+  number: string;
+  type: string;
+  status: 'CLEAN' | 'OCCUPIED' | 'DIRTY';
+  price: number;
+  imageUrl?: string;
+  guestName?: string;
+  amenities?: string[];
+  hasAnomaly?: boolean;
+}
 
 interface RoomCardProps {
   room: Room;
@@ -16,7 +27,13 @@ const statusConfig = {
 
 const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
   const status = statusConfig[room.status];
-
+  const basePrice = room.price;
+  const actualPrice = basePrice * 1000;
+  const formattedPrice = new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0,
+  }).format(actualPrice);
   if (compact) {
     return (
       <div
@@ -56,10 +73,10 @@ const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
         onClick && 'cursor-pointer'
       )}
     >
-      {room.image && (
+      {room.imageUrl && (
         <div className="-mx-6 -mt-6 mb-4 aspect-[4/3] overflow-hidden">
           <Image
-            src={room.image}
+            src={room.imageUrl ?? ''}
             alt={`Room ${room.number}`}
             width={400}
             height={300}
@@ -73,9 +90,7 @@ const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
             <h3 className="text-foreground font-semibold">{room.type}</h3>
             <p className="text-muted-foreground text-sm">Room {room.number}</p>
           </div>
-          <span className={cn('status-badge', status.className)}>
-            {status.label}
-          </span>
+          <span className={cn('status-badge', room.status)}>{room.status}</span>
         </div>
 
         {room.amenities && room.amenities.length > 0 && (
@@ -93,7 +108,7 @@ const RoomCard = ({ room, compact = false, onClick }: RoomCardProps) => {
 
         <div className="border-border flex items-center justify-between border-t pt-2">
           <span className="text-foreground text-2xl font-semibold">
-            ${room.price}
+            {formattedPrice}
           </span>
           <span className="text-muted-foreground text-sm">per night</span>
         </div>

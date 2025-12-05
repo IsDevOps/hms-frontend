@@ -8,8 +8,6 @@ import {
   BedDouble,
   Users,
   Settings,
-  Bell,
-  Menu,
   X,
   LogOut,
 } from 'lucide-react';
@@ -22,9 +20,10 @@ interface AdminLayoutProps {
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Alerts', href: '/admin/alerts', icon: AlertTriangle },
-  { name: 'Rooms', href: '/admin/rooms', icon: BedDouble },
-  { name: 'Guests', href: '/admin/guests', icon: Users },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Rooms', href: '/admin/dashboard/rooms', icon: BedDouble },
+  { name: 'Guests', href: '/admin/dashboard/guests', icon: Users },
+  { name: 'Request', href: '/admin/dashboard/requests', icon: Users },
+  { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -56,7 +55,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 <BedDouble className="text-sidebar-primary-foreground h-4 w-4" />
               </div>
               <span className="text-sidebar-foreground text-lg font-semibold">
-                HotelOS
+                Hotel
               </span>
             </Link>
             <button
@@ -118,21 +117,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         {/* Top Header */}
         <header className="bg-card border-border flex h-16 items-center justify-between border-b px-4 lg:px-6">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="hover:bg-secondary rounded-lg p-2 transition-colors lg:hidden"
-            >
-              <Menu className="text-foreground h-5 w-5" />
-            </button>
             <h1 className="text-foreground hidden text-lg font-semibold sm:block">
               Hotel Operations
             </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="hover:bg-secondary relative rounded-lg p-2 transition-colors">
-              <Bell className="text-muted-foreground h-5 w-5" />
-              <span className="bg-warning absolute top-1.5 right-1.5 h-2 w-2 rounded-full" />
-            </button>
           </div>
         </header>
 
