@@ -13,7 +13,7 @@ services:
         order: start-first
       labels:
         - 'traefik.enable=true'
-        - 'traefik.http.routers.hms-frontend.rule=Host(`payment-staging.medicate.health`)'
+        - 'traefik.http.routers.hms-frontend.rule=Host(`joizzyenterpriseltd.co.uk`)'
         - 'traefik.http.routers.hms-frontend.entrypoints=websecure'
         - 'traefik.http.routers.hms-frontend.tls.certresolver=myresolver'
         - 'traefik.http.services.hms-frontend.loadbalancer.server.port=3000'
