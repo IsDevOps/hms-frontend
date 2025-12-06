@@ -185,11 +185,11 @@ const BookingWizardPage = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="mx-auto max-w-5xl px-4 py-12">
+      <div className="mx-auto md:max-w-5xl px-4 py-12">
         {/* Progress */}
         {/* Progress Steps */}
         <nav className="mb-10">
-          <ol className="mx-auto flex max-w-3xl items-center justify-between">
+          <ol className="mx-auto flex md:max-w-3xl items-center justify-between">
             {steps.map((step, idx) => {
               const isActive = currentStep === idx;
               const isCompleted = currentStep > idx;
@@ -256,7 +256,7 @@ const BookingWizardPage = () => {
                 onSelect={setDateRange}
                 numberOfMonths={1}
                 disabled={(date) => date < new Date()}
-                className="pointer-events-auto mx-auto ml-[5rem]"
+                className="pointer-events-auto mx-auto ml-[2rem] md:ml-[5rem]"
               />
               {dateRange?.from && dateRange?.to && (
                 <div className="bg-secondary mt-6 rounded-lg p-4 text-center">
@@ -501,20 +501,22 @@ const BookingWizardPage = () => {
               Continue <ArrowRight className="ml-2 h-5 w-5" />
             </button>
           ) : (
-            <button
-              onClick={handleCompleteBooking}
-              disabled={!uploadedFile || uploadStatus === 'uploading'}
-              className="hotel-btn-primary flex min-w-[200px] items-center justify-center gap-3"
-            >
-              {uploadStatus === 'uploading' ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                'Complete Booking'
-              )}
-            </button>
+            uploadStatus !== 'success' && (
+              <button
+                onClick={handleCompleteBooking}
+                disabled={!uploadedFile || uploadStatus === 'uploading'}
+                className="hotel-btn-primary flex min-w-[200px] items-center justify-center gap-3"
+              >
+                {uploadStatus === 'uploading' ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Complete Booking'
+                )}
+              </button>
+            )
           )}
         </div>
       </div>
