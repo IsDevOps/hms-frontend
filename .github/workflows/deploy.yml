@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # IMAGE_NAME is set dynamically in jobs to ensure lowercase
+  # IMAGE_NAME is set dynamically in jobs
   SERVICE_NAME: hms-frontend
   STACK_NAME: hms_stack
 
