@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   BedDouble,
   Users,
-  Settings,
   X,
   LogOut,
 } from 'lucide-react';
@@ -31,7 +30,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="bg-background flex min-h-screen">
+    <div className="bg-background flex min-h-screen overflow-hidden">
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -113,7 +112,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex min-w-0 flex-1 flex-col">
+     <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <header className="bg-card border-border flex h-16 items-center justify-between border-b px-4 lg:px-6">
           <div className="flex items-center gap-4">
@@ -124,7 +123,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );
