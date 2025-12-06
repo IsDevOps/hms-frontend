@@ -20,7 +20,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  User as UserIcon,
 } from 'lucide-react';
 import {
   DropdownMenu,
