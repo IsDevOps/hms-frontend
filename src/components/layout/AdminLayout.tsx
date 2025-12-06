@@ -22,8 +22,8 @@ const navigation = [
   { name: 'Alerts', href: '/admin/alerts', icon: AlertTriangle },
   { name: 'Rooms', href: '/admin/dashboard/rooms', icon: BedDouble },
   { name: 'Guests', href: '/admin/dashboard/guests', icon: Users },
-  { name: 'Request', href: '/admin/dashboard/requests', icon: Users },
-  { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
+  { name: 'Requests', href: '/admin/dashboard/requests', icon: Users },
+  // { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {

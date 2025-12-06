@@ -84,27 +84,152 @@ export interface AIRecommendation {
   timeRange: { start: number; end: number };
 }
 
+// export const MOCK_MENU_ITEMS: MenuItem[] = [
+//   {
+//     id: 'burger',
+//     name: 'Gourmet Burger',
+//     price: 18,
+//     image: '/images/burger.jpg',
+//     description: 'Wagyu beef with truffle aioli',
+//     upsellItem: 'coke',
+//     upsellMessage:
+//       'Hungry? Guests who ordered Burger also loved Ice Cold Coke. Add for $2?',
+//     category: 'food',
+//   },
+//   {
+//     id: 'pasta',
+//     name: 'Truffle Pasta',
+//     price: 24,
+//     image: '/images/pasta.jpg',
+//     description: 'Fresh fettuccine with black truffle',
+//     category: 'food',
+//   },
+// ];
+
+
 export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: 'burger',
     name: 'Gourmet Burger',
     price: 18,
-    image: '/images/burger.jpg',
-    description: 'Wagyu beef with truffle aioli',
-    upsellItem: 'coke',
+    image:
+      'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&q=80',
+    description:
+      'Wagyu beef patty, truffle aioli, aged cheddar on a brioche bun.',
+    upsellItem: 'fries',
     upsellMessage:
-      'Hungry? Guests who ordered Burger also loved Ice Cold Coke. Add for $2?',
+      'Perfect pairing! Add a side of our Truffle Parmesan Fries for just $5?',
     category: 'food',
   },
   {
     id: 'pasta',
     name: 'Truffle Pasta',
     price: 24,
-    image: '/images/pasta.jpg',
-    description: 'Fresh fettuccine with black truffle',
+    image:
+      'https://images.unsplash.com/photo-1621996346565-e326b20f5961?w=800&q=80',
+    description:
+      'Fresh fettuccine with black truffle cream sauce and shaved parmesan.',
     category: 'food',
   },
+  {
+    id: 'pizza',
+    name: 'Margherita Pizza',
+    price: 20,
+    image:
+      'https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&q=80',
+    description:
+      'Classic Neapolitan pizza with San Marzano tomatoes, fresh mozzarella, and basil.',
+    category: 'food',
+  },
+  {
+    id: 'steak',
+    name: 'Ribeye Steak',
+    price: 45,
+    image:
+      'https://images.unsplash.com/photo-1551028150-64b9f398f67b?w=800&q=80',
+    description:
+      '12oz prime ribeye, grilled to perfection, served with asparagus.',
+    category: 'food',
+  },
+  {
+    id: 'salad',
+    name: 'Caesar Salad',
+    price: 15,
+    image:
+      'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&q=80',
+    description:
+      'Crisp romaine lettuce, sourdough croutons, parmesan, and creamy Caesar dressing.',
+    upsellItem: 'chicken',
+    upsellMessage: 'Add grilled chicken for $6?',
+    category: 'food',
+  },
+  {
+    id: 'sandwich',
+    name: 'Club Sandwich',
+    price: 16,
+    image:
+      'https://images.unsplash.com/photo-1592415486689-125c9287278b?w=800&q=80',
+    description:
+      'Triple-decker with roasted turkey, bacon, lettuce, tomato, and mayo.',
+    category: 'food',
+  },
+  {
+    id: 'fries',
+    name: 'Truffle Fries',
+    price: 9,
+    image:
+      'https://images.unsplash.com/photo-1598679253544-2c9740f92b44?w=800&q=80',
+    description:
+      'Crispy fries tossed in truffle oil, parmesan, and fresh parsley.',
+    category: 'food',
+  },
+  {
+    id: 'coke',
+    name: 'Coca-Cola',
+    price: 4,
+    image:
+      'https://images.unsplash.com/photo-1622483767028-3f66f32a6444?w=800&q=80',
+    description: 'Classic Coca-Cola, served chilled.',
+    category: 'beverage',
+  },
+  {
+    id: 'water',
+    name: 'Mineral Water',
+    price: 3,
+    image:
+      'https://images.unsplash.com/photo-1583122485042-3712a7a402a7?w=800&q=80',
+    description: 'Still or sparkling mineral water.',
+    category: 'beverage',
+  },
+  {
+    id: 'cappuccino',
+    name: 'Cappuccino',
+    price: 6,
+    image:
+      'https://images.unsplash.com/photo-1572442388796-11668a67e234?w=800&q=80',
+    description: 'Espresso with steamed milk foam.',
+    category: 'beverage',
+  },
+  {
+    id: 'juice',
+    name: 'Orange Juice',
+    price: 7,
+    image:
+      'https://images.unsplash.com/photo-1613482143818-0255919a3b1d?w=800&q=80',
+    description: 'Freshly squeezed orange juice.',
+    category: 'beverage',
+  },
+  {
+    id: 'cocktail',
+    name: 'Old Fashioned',
+    price: 15,
+    image:
+      'https://images.unsplash.com/photo-1624523326088-dd4a21b3a60a?w=800&q=80',
+    description: 'Bourbon, bitters, sugar, and a twist of orange.',
+    category: 'beverage',
+  },
 ];
+
 
 // AI Recommendations based on time of day
 export const getAIRecommendation = (): AIRecommendation | null => {

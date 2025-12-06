@@ -528,6 +528,319 @@
 //   );
 // }
 
+// 'use client';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+// } from '@/components/ui/card';
+// import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import {
+//   Select,
+//   SelectTrigger,
+//   SelectValue,
+//   SelectContent,
+//   SelectItem,
+// } from '@/components/ui/select';
+// import {
+//   Clock,
+//   ChefHat,
+//   BedSingle,
+//   ConciergeBell,
+//   Zap,
+//   Loader2,
+//   RefreshCcw,
+//   MapPin,
+//   MoreHorizontal,
+// } from 'lucide-react';
+// import { cn } from '@/lib/utils';
+// import { formatDistanceToNow } from 'date-fns';
+
+// // Types based on your backend
+// interface ServiceRequest {
+//   id: string;
+//   type: 'FOOD' | 'CLEANING' | 'CONCIERGE' | 'MAINTENANCE';
+//   description: string;
+//   priority: 'LOW' | 'NORMAL' | 'HIGH';
+//   status: 'RECEIVED' | 'IN_PROGRESS' | 'ON_WAY' | 'COMPLETED' | 'CANCELLED';
+//   createdAt: string;
+//   booking: {
+//     room: {
+//       number: string;
+//     };
+//     guest: {
+//       name: string;
+//     };
+//   };
+// }
+
+// export default function RequestDashboard() {
+//   const [requests, setRequests] = useState<ServiceRequest[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [filterType, setFilterType] = useState('ALL');
+
+//   const fetchRequests = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await fetch(
+//         'https://api-staging.medicate.health/api/v1/service-requests'
+//       );
+//       if (!res.ok) throw new Error('Failed to fetch');
+//       const data = await res.json();
+//       setRequests(data);
+//     } catch (error) {
+//       console.error(error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchRequests();
+//     const interval = setInterval(fetchRequests, 10000);
+//     return () => clearInterval(interval);
+//   }, []);
+
+//   const handleStatusUpdate = async (id: string, newStatus: string) => {
+//     setRequests((prev) =>
+//       prev.map((r) => (r.id === id ? { ...r, status: newStatus as any } : r))
+//     );
+
+//     try {
+//       await fetch(
+//         `https://api-staging.medicate.health/api/v1/service-requests/${id}/status`,
+//         {
+//           method: 'PATCH',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ status: newStatus }),
+//         }
+//       );
+//     } catch (error) {
+//       console.error('Failed to update status', error);
+//     }
+//   };
+
+//   const filteredRequests = requests.filter((r) =>
+//     filterType === 'ALL' ? true : r.type === filterType
+//   );
+
+//   // --- STYLING HELPERS ---
+
+//   // Get colors and icons based on Category
+//   const getCategoryTheme = (type: string) => {
+//     switch (type) {
+//       case 'FOOD':
+//         return {
+//           color: 'bg-orange-500',
+//           text: 'text-orange-600',
+//           bg: 'bg-orange-50',
+//           icon: ChefHat,
+//         };
+//       case 'CLEANING':
+//         return {
+//           color: 'bg-blue-500',
+//           text: 'text-blue-600',
+//           bg: 'bg-blue-50',
+//           icon: BedSingle,
+//         };
+//       case 'CONCIERGE':
+//         return {
+//           color: 'bg-purple-500',
+//           text: 'text-purple-600',
+//           bg: 'bg-purple-50',
+//           icon: ConciergeBell,
+//         };
+//       default:
+//         return {
+//           color: 'bg-slate-500',
+//           text: 'text-slate-600',
+//           bg: 'bg-slate-50',
+//           icon: Zap,
+//         };
+//     }
+//   };
+
+//   // Status Badge Colors
+//   const getStatusColor = (status: string) => {
+//     switch (status) {
+//       case 'RECEIVED':
+//         return 'bg-blue-50 text-blue-700 border-blue-100';
+//       case 'IN_PROGRESS':
+//         return 'bg-amber-50 text-amber-700 border-amber-100';
+//       case 'ON_WAY':
+//         return 'bg-purple-50 text-purple-700 border-purple-100';
+//       case 'COMPLETED':
+//         return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+//       default:
+//         return 'bg-slate-50 text-slate-700 border-slate-200';
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen space-y-8 bg-[#F8F9FB] p-8">
+//       {/* Header */}
+//       <div className="flex items-center justify-between">
+//         <div>
+//           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+//             Concierge Desk
+//           </h1>
+//           <p className="mt-1 text-slate-500">
+//             {requests.length} active service requests
+//           </p>
+//         </div>
+//         <button
+//           onClick={fetchRequests}
+//           className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md"
+//         >
+//           <RefreshCcw size={14} className={loading ? 'animate-spin' : ''} />
+//           <span>Sync</span>
+//         </button>
+//       </div>
+
+//       {/* Tabs */}
+//       <Tabs defaultValue="ALL" className="w-full" onValueChange={setFilterType}>
+//         <TabsList className="h-12 gap-2 rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+//           <TabsTrigger
+//             value="ALL"
+//             className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-900 data-[state=active]:text-white"
+//           >
+//             All
+//           </TabsTrigger>
+//           <TabsTrigger
+//             value="FOOD"
+//             className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
+//           >
+//             Dining
+//           </TabsTrigger>
+//           <TabsTrigger
+//             value="CLEANING"
+//             className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
+//           >
+//             Housekeeping
+//           </TabsTrigger>
+//           <TabsTrigger
+//             value="CONCIERGE"
+//             className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
+//           >
+//             Concierge
+//           </TabsTrigger>
+//         </TabsList>
+//       </Tabs>
+
+//       {/* Grid */}
+//       {loading && requests.length === 0 ? (
+//         <div className="flex h-64 items-center justify-center">
+//           <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+//         </div>
+//       ) : (
+//         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+//           {filteredRequests.map((req) => {
+//             const theme = getCategoryTheme(req.type);
+//             const Icon = theme.icon;
+
+//             return (
+//               <Card
+//                 key={req.id}
+//                 className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+//               >
+//                 {/* Top Color Strip */}
+//                 <div
+//                   className={`absolute top-0 left-0 h-1 w-full ${theme.color}`}
+//                 />
+
+//                 <CardHeader className="pt-6 pb-2">
+//                   <div className="flex items-start justify-between">
+//                     {/* Room & Guest Info */}
+//                     <div>
+//                       <div className="flex items-baseline gap-2">
+//                         <span className="text-2xl font-bold text-slate-900">
+//                           {req.booking?.room?.number || '---'}
+//                         </span>
+//                         <span className="text-xs font-medium tracking-wider text-slate-400 uppercase">
+//                           Room
+//                         </span>
+//                       </div>
+//                       <p className="mt-1 line-clamp-1 text-sm font-medium text-slate-500">
+//                         {req.booking?.guest?.name || 'Guest'}
+//                       </p>
+//                     </div>
+
+//                     {/* Category Icon Badge */}
+//                     <div
+//                       className={cn(
+//                         'flex h-10 w-10 items-center justify-center rounded-full',
+//                         theme.bg,
+//                         theme.text
+//                       )}
+//                     >
+//                       <Icon size={18} />
+//                     </div>
+//                   </div>
+//                 </CardHeader>
+
+//                 <CardContent className="flex-grow py-2">
+//                   {/* Priority Tag (Static, Sleek) */}
+//                   {req.priority === 'HIGH' && (
+//                     <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600 uppercase ring-1 ring-red-600/10 ring-inset">
+//                       <Zap size={10} className="fill-current" />
+//                       Priority
+//                     </div>
+//                   )}
+
+//                   <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">
+//                     {req.description}
+//                   </p>
+//                 </CardContent>
+
+//                 <CardFooter className="flex flex-col gap-3 border-t border-slate-50 bg-slate-50/30 p-4">
+//                   <div className="flex w-full items-center justify-between text-xs text-slate-400">
+//                     <div className="flex items-center gap-1">
+//                       <Clock size={12} />
+//                       {req.createdAt
+//                         ? formatDistanceToNow(new Date(req.createdAt))
+//                         : 'Just now'}
+//                     </div>
+//                     <MoreHorizontal size={14} />
+//                   </div>
+
+//                   <Select
+//                     defaultValue={req.status}
+//                     onValueChange={(val) => handleStatusUpdate(req.id, val)}
+//                   >
+//                     <SelectTrigger
+//                       className={cn(
+//                         'h-9 w-full border text-xs font-semibold tracking-wide uppercase transition-colors focus:ring-0',
+//                         getStatusColor(req.status)
+//                       )}
+//                     >
+//                       <SelectValue />
+//                     </SelectTrigger>
+//                     <SelectContent>
+//                       <SelectItem value="RECEIVED">Received</SelectItem>
+//                       <SelectItem value="IN_PROGRESS">Processing</SelectItem>
+//                       <SelectItem value="ON_WAY">En Route</SelectItem>
+//                       <SelectItem value="COMPLETED">Done</SelectItem>
+//                     </SelectContent>
+//                   </Select>
+//                 </CardFooter>
+//               </Card>
+//             );
+//           })}
+
+//           {filteredRequests.length === 0 && (
+//             <div className="col-span-full flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 text-slate-400">
+//               <ChefHat size={48} className="mb-4 opacity-10" />
+//               <p className="text-sm font-medium">No active requests found</p>
+//             </div>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
 'use client';
 import React, { useEffect, useState } from 'react';
 import {
@@ -552,13 +865,16 @@ import {
   Zap,
   Loader2,
   RefreshCcw,
-  MapPin,
   MoreHorizontal,
+  CheckCircle2,
+  Circle,
+  ArrowRight,
+  Filter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
-// Types based on your backend
+// --- TYPES ---
 interface ServiceRequest {
   id: string;
   type: 'FOOD' | 'CLEANING' | 'CONCIERGE' | 'MAINTENANCE';
@@ -581,6 +897,7 @@ export default function RequestDashboard() {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('ALL');
 
+  // --- FETCHING ---
   const fetchRequests = async () => {
     setLoading(true);
     try {
@@ -603,7 +920,9 @@ export default function RequestDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // --- UPDATING ---
   const handleStatusUpdate = async (id: string, newStatus: string) => {
+    // Optimistic UI Update
     setRequests((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: newStatus as any } : r))
     );
@@ -626,113 +945,161 @@ export default function RequestDashboard() {
     filterType === 'ALL' ? true : r.type === filterType
   );
 
-  // --- STYLING HELPERS ---
+  // --- THEME HELPERS ---
 
-  // Get colors and icons based on Category
   const getCategoryTheme = (type: string) => {
     switch (type) {
       case 'FOOD':
         return {
-          color: 'bg-orange-500',
-          text: 'text-orange-600',
           bg: 'bg-orange-50',
+          text: 'text-orange-700',
+          border: 'border-orange-100',
           icon: ChefHat,
+          label: 'Dining',
         };
       case 'CLEANING':
         return {
-          color: 'bg-blue-500',
-          text: 'text-blue-600',
           bg: 'bg-blue-50',
+          text: 'text-blue-700',
+          border: 'border-blue-100',
           icon: BedSingle,
+          label: 'Housekeeping',
         };
       case 'CONCIERGE':
         return {
-          color: 'bg-purple-500',
-          text: 'text-purple-600',
           bg: 'bg-purple-50',
+          text: 'text-purple-700',
+          border: 'border-purple-100',
           icon: ConciergeBell,
+          label: 'Concierge',
+        };
+      case 'MAINTENANCE':
+        return {
+          bg: 'bg-slate-100',
+          text: 'text-slate-700',
+          border: 'border-slate-200',
+          icon: Zap,
+          label: 'Maintenance',
         };
       default:
         return {
-          color: 'bg-slate-500',
-          text: 'text-slate-600',
-          bg: 'bg-slate-50',
-          icon: Zap,
+          bg: 'bg-gray-50',
+          text: 'text-gray-700',
+          border: 'border-gray-200',
+          icon: Circle,
+          label: 'General',
         };
     }
   };
 
-  // Status Badge Colors
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'RECEIVED':
-        return 'bg-blue-50 text-blue-700 border-blue-100';
+        return 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200';
       case 'IN_PROGRESS':
-        return 'bg-amber-50 text-amber-700 border-amber-100';
+        return 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200';
       case 'ON_WAY':
-        return 'bg-purple-50 text-purple-700 border-purple-100';
+        return 'bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200';
       case 'COMPLETED':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+        return 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+        return 'bg-slate-100 text-slate-600 border-slate-200';
     }
   };
 
   return (
-    <div className="min-h-screen space-y-8 bg-[#F8F9FB] p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-[#F8F9FB] p-6 lg:p-10">
+      {/* --- HEADER --- */}
+      <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Concierge Desk
+            Concierge Command
           </h1>
-          <p className="mt-1 text-slate-500">
-            {requests.length} active service requests
+          <p className="text-slate-500">
+            Real-time overview of guest requests and service status.
           </p>
         </div>
-        <button
-          onClick={fetchRequests}
-          className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md"
-        >
-          <RefreshCcw size={14} className={loading ? 'animate-spin' : ''} />
-          <span>Sync</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 md:flex">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            </span>
+            System Online
+          </div>
+          <button
+            onClick={fetchRequests}
+            className="flex h-10 items-center gap-2 rounded-full bg-slate-900 px-5 text-sm font-medium text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-95"
+          >
+            <RefreshCcw size={14} className={loading ? 'animate-spin' : ''} />
+            <span>Sync</span>
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="ALL" className="w-full" onValueChange={setFilterType}>
-        <TabsList className="h-12 gap-2 rounded-full border border-slate-200 bg-white p-1 shadow-sm">
-          <TabsTrigger
-            value="ALL"
-            className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-900 data-[state=active]:text-white"
-          >
-            All
-          </TabsTrigger>
-          <TabsTrigger
-            value="FOOD"
-            className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
-          >
-            Dining
-          </TabsTrigger>
-          <TabsTrigger
-            value="CLEANING"
-            className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
-          >
-            Housekeeping
-          </TabsTrigger>
-          <TabsTrigger
-            value="CONCIERGE"
-            className="rounded-full px-6 text-xs font-medium data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
-          >
-            Concierge
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {/* --- FILTERS --- */}
+      <div className="mb-8">
+        <Tabs
+          defaultValue="ALL"
+          className="w-full"
+          onValueChange={setFilterType}
+        >
+          <TabsList className="h-14 w-full justify-start gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm md:w-auto">
+            <TabsTrigger
+              value="ALL"
+              className="h-10 rounded-xl px-4 text-xs font-medium text-slate-500 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900"
+            >
+              All Requests
+            </TabsTrigger>
+            <TabsTrigger
+              value="FOOD"
+              className="h-10 gap-2 rounded-xl px-4 text-xs font-medium text-slate-500 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700"
+            >
+              <ChefHat size={14} /> Dining
+            </TabsTrigger>
+            <TabsTrigger
+              value="CLEANING"
+              className="h-10 gap-2 rounded-xl px-4 text-xs font-medium text-slate-500 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+            >
+              <BedSingle size={14} /> Housekeeping
+            </TabsTrigger>
+            <TabsTrigger
+              value="CONCIERGE"
+              className="h-10 gap-2 rounded-xl px-4 text-xs font-medium text-slate-500 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700"
+            >
+              <ConciergeBell size={14} /> Concierge
+            </TabsTrigger>
+            <TabsTrigger
+              value="MAINTENANCE"
+              className="h-10 gap-2 rounded-xl px-4 text-xs font-medium text-slate-500 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-800"
+            >
+              <Zap size={14} /> Maintenance
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
-      {/* Grid */}
+      {/* --- GRID --- */}
       {loading && requests.length === 0 ? (
-        <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+        <div className="flex h-96 items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-white">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-10 w-10 animate-spin text-slate-300" />
+            <p className="text-sm font-medium text-slate-400">
+              Fetching live data...
+            </p>
+          </div>
+        </div>
+      ) : filteredRequests.length === 0 ? (
+        <div className="flex h-96 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-white">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50">
+            <Filter className="h-8 w-8 text-slate-300" />
+          </div>
+          <h3 className="mt-4 text-lg font-semibold text-slate-900">
+            No requests found
+          </h3>
+          <p className="text-sm text-slate-500">
+            There are no active requests in this category.
+          </p>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -743,98 +1110,111 @@ export default function RequestDashboard() {
             return (
               <Card
                 key={req.id}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
-                {/* Top Color Strip */}
-                <div
-                  className={`absolute top-0 left-0 h-1 w-full ${theme.color}`}
-                />
+                {/* Priority Indicator (Red Dot) */}
+                {req.priority === 'HIGH' && (
+                  <span className="absolute top-3 right-3 flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                  </span>
+                )}
 
-                <CardHeader className="pt-6 pb-2">
-                  <div className="flex items-start justify-between">
-                    {/* Room & Guest Info */}
-                    <div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-slate-900">
-                          {req.booking?.room?.number || '---'}
-                        </span>
-                        <span className="text-xs font-medium tracking-wider text-slate-400 uppercase">
-                          Room
-                        </span>
-                      </div>
-                      <p className="mt-1 line-clamp-1 text-sm font-medium text-slate-500">
-                        {req.booking?.guest?.name || 'Guest'}
-                      </p>
-                    </div>
-
-                    {/* Category Icon Badge */}
+                <CardHeader className="border-b border-slate-50 bg-slate-50/50 pt-5 pb-4">
+                  <div className="flex items-center justify-between">
                     <div
                       className={cn(
-                        'flex h-10 w-10 items-center justify-center rounded-full',
+                        'flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-bold tracking-wider uppercase',
                         theme.bg,
                         theme.text
                       )}
                     >
-                      <Icon size={18} />
+                      <Icon size={14} />
+                      {theme.label}
                     </div>
+                    {req.priority === 'HIGH' && (
+                      <span className="text-[10px] font-bold tracking-widest text-red-600 uppercase">
+                        Urgent
+                      </span>
+                    )}
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-grow py-2">
-                  {/* Priority Tag (Static, Sleek) */}
-                  {req.priority === 'HIGH' && (
-                    <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600 uppercase ring-1 ring-red-600/10 ring-inset">
-                      <Zap size={10} className="fill-current" />
-                      Priority
+                <CardContent className="flex flex-1 flex-col gap-4 pt-5">
+                  {/* Guest & Room */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900">
+                        {req.booking?.guest?.name || 'Guest'}
+                      </h3>
+                      <p className="text-xs font-medium text-slate-400">
+                        Guest
+                      </p>
                     </div>
-                  )}
-
-                  <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">
-                    {req.description}
-                  </p>
-                </CardContent>
-
-                <CardFooter className="flex flex-col gap-3 border-t border-slate-50 bg-slate-50/30 p-4">
-                  <div className="flex w-full items-center justify-between text-xs text-slate-400">
-                    <div className="flex items-center gap-1">
-                      <Clock size={12} />
-                      {req.createdAt
-                        ? formatDistanceToNow(new Date(req.createdAt))
-                        : 'Just now'}
+                    <div className="text-right">
+                      <h3 className="text-lg font-bold text-slate-900">
+                        {req.booking?.room?.number || '---'}
+                      </h3>
+                      <p className="text-xs font-medium text-slate-400">
+                        Room No
+                      </p>
                     </div>
-                    <MoreHorizontal size={14} />
                   </div>
 
+                  {/* Description Box */}
+                  <div className="flex-1 rounded-xl bg-slate-50 p-3">
+                    <p className="line-clamp-3 text-sm leading-relaxed font-medium text-slate-700">
+                      &ldquo;{req.description}&rdquo;
+                    </p>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="flex flex-col gap-3 border-t border-slate-100 p-4">
+                  {/* Metadata Row */}
+                  <div className="flex w-full items-center justify-between text-xs text-slate-400">
+                    <div className="flex items-center gap-1.5">
+                      <Clock size={14} />
+                      <span className="font-medium">
+                        {req.createdAt
+                          ? formatDistanceToNow(new Date(req.createdAt)) +
+                            ' ago'
+                          : 'Just now'}
+                      </span>
+                    </div>
+                    {/* Status Text (Small) */}
+                    <span className="font-mono tracking-wider uppercase opacity-60">
+                      ID: {req.id.slice(0, 4)}
+                    </span>
+                  </div>
+
+                  {/* Status Action */}
                   <Select
                     defaultValue={req.status}
                     onValueChange={(val) => handleStatusUpdate(req.id, val)}
                   >
                     <SelectTrigger
                       className={cn(
-                        'h-9 w-full border text-xs font-semibold tracking-wide uppercase transition-colors focus:ring-0',
+                        'h-10 w-full border text-xs font-bold tracking-wider uppercase transition-all focus:ring-2 focus:ring-offset-1',
                         getStatusColor(req.status)
                       )}
                     >
-                      <SelectValue />
+                      <div className="flex items-center gap-2">
+                        <span>Status:</span>
+                        <SelectValue />
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="RECEIVED">Received</SelectItem>
-                      <SelectItem value="IN_PROGRESS">Processing</SelectItem>
-                      <SelectItem value="ON_WAY">En Route</SelectItem>
-                      <SelectItem value="COMPLETED">Done</SelectItem>
+                      <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                      <SelectItem value="ON_WAY">On The Way</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
                 </CardFooter>
               </Card>
             );
           })}
-
-          {filteredRequests.length === 0 && (
-            <div className="col-span-full flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 text-slate-400">
-              <ChefHat size={48} className="mb-4 opacity-10" />
-              <p className="text-sm font-medium">No active requests found</p>
-            </div>
-          )}
         </div>
       )}
     </div>

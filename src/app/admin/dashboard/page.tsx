@@ -267,8 +267,8 @@ const AdminDashboard = () => {
             icon={NairaIcon}
           />
           <StatCard
-            label="Active Guests"
-            value={data?.activeGuests ?? 0}
+            label="Pending Requests"
+            value={data?.pendingRequests ?? 0}
             change={MOCK_DASHBOARD_STATS.issues.change}
             icon={AlertTriangle}
           />
@@ -420,7 +420,7 @@ const AdminDashboard = () => {
             </div>
             <div className="grid grid-cols-5 gap-2">
               {roomsData &&
-                roomsData.map((room: any) => {
+                roomsData.slice(0, 25).map((room: any) => {
                   const hasAnomaly =
                     room.status === 'MAINTENANCE' || room.hasAnomaly;
 
