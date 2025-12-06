@@ -552,7 +552,6 @@ import {
   Zap,
   Loader2,
   RefreshCcw,
-  MapPin,
   MoreHorizontal,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
