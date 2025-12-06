@@ -13,6 +13,8 @@ import {
   User,
   Mail,
   X,
+  MapPin,
+  Phone,
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -22,10 +24,6 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { DateRange } from 'react-day-picker';
 import { useGetRoomsQuery } from '@/store/services/admin-dashboard';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
 
 type VerificationResult = {
   success: boolean;
@@ -39,8 +37,8 @@ type VerificationResult = {
 // ─────────────────────────────────────────────────────────────────────────────
 const steps = [
   { id: 0, name: 'Select Dates', icon: Calendar },
-  { id: 1, name: 'Your Details', icon: User },
-  { id: 2, name: 'Choose Room', icon: Calendar },
+  { id: 1, name: 'Choose Room', icon: Calendar },
+  { id: 2, name: 'Your Details', icon: User },
   { id: 3, name: 'Verify ID', icon: Lock },
 ] as const;
 
@@ -74,9 +72,9 @@ const BookingWizardPage = () => {
       case 0:
         return !!dateRange?.from && !!dateRange?.to;
       case 1:
-        return guestName.trim() !== '' && isValidEmail(guestEmail);
-      case 2:
         return selectedRoom !== null;
+      case 2:
+        return guestName.trim() !== '' && isValidEmail(guestEmail);
       case 3:
         return uploadedFile !== null;
       default:
@@ -273,7 +271,7 @@ const BookingWizardPage = () => {
           )}
 
           {/* Step 1 – Details */}
-          {currentStep === 1 && (
+          {currentStep === 2 && (
             <div className="mx-auto max-w-md space-y-8">
               <h2 className="text-center text-3xl font-bold">Your Details</h2>
               <div className="space-y-6">
@@ -284,6 +282,42 @@ const BookingWizardPage = () => {
                     id="name"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="John Doe"
+                    className="h-12 pl-11"
+                  />
+                </div>
+              </div>
+              <div className="space-y-6">
+                <Label htmlFor="name">Phone Number</Label>
+                <div className="relative mt-2">
+                  <Phone className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                  <Input
+                    id="name"
+                    value=""
+                    placeholder="John Doe"
+                    className="h-12 pl-11"
+                  />
+                </div>
+              </div>
+              <div className="space-y-6">
+                <Label htmlFor="name">Address</Label>
+                <div className="relative mt-2">
+                  <MapPin className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                  <Input
+                    id="name"
+                    value=""
+                    placeholder="John Doe"
+                    className="h-12 pl-11"
+                  />
+                </div>
+              </div>
+              <div className="space-y-6">
+                <Label htmlFor="name">Gender</Label>
+                <div className="relative mt-2">
+                  <User className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                  <Input
+                    id="name"
+                    value=""
                     placeholder="John Doe"
                     className="h-12 pl-11"
                   />
@@ -312,7 +346,7 @@ const BookingWizardPage = () => {
           )}
 
           {/* Step 2 – Room */}
-          {currentStep === 2 && (
+          {currentStep === 1 && (
             <div>
               <h2 className="mb-10 text-center text-3xl font-bold">
                 Choose Your Room

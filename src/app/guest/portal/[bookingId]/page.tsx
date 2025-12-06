@@ -49,6 +49,8 @@ import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { useCreateServiceMutation } from '@/store/services/admin-dashboard';
+import { useParams } from 'next/navigation';
+import axios from 'axios';
 
 const ORDER_STATUS_STEPS: { status: OrderStatus; label: string; icon: any }[] =
   [
@@ -81,11 +83,15 @@ const serviceTypes = [
 ];
 
 const GuestPortal = () => {
+  const { bookingId } = useParams();
+  // const router = useRouter();
   const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
   const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
   const [selectedServiceType, setSelectedServiceType] = useState<string | null>(
     null
   );
+  const [booking, setBooking] = useState<any | null>(MOCK_CURRENT_BOOKING);
+
   const [isFoodMenuOpen, setIsFoodMenuOpen] = useState(false);
   const [cart, setCart] = useState<MenuItem[]>([]);
   const [upsellItem, setUpsellItem] = useState<MenuItem | null>(null);
@@ -94,8 +100,8 @@ const GuestPortal = () => {
   const [aiRecommendation] = useState(getAIRecommendation());
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
   const [createService] = useCreateServiceMutation();
-
-  const booking = MOCK_CURRENT_BOOKING;
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string>('');
 
   // Listen for order status updates
   useEffect(() => {
@@ -152,7 +158,27 @@ const GuestPortal = () => {
     setUpsellItem(null);
     setPendingCartItem(null);
   };
+  useEffect(() => {
+    const fetchBooking = async () => {
+      if (!bookingId) return;
 
+      try {
+        setLoading(true);
+        // Direct Axios call to your NestJS Backend
+        const response = await axios.get(
+          `https://api-staging.medicate.health/api/v1/bookings/${bookingId}`
+        );
+        setBooking(response.data);
+      } catch (err: any) {
+        console.error('Failed to fetch booking:', err);
+        setError('Could not find your booking information.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooking();
+  }, [bookingId, setError, setLoading]);
   const handleServiceRequest = async (type: string, items: string[]) => {
     try {
       const payload = {
