@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 2927328eac040e1867d1cdde150670c5922197b9
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import {
@@ -11,36 +14,24 @@ import {
   Loader2,
   ChefHat,
   Truck,
-  Plus,
   Bot,
-  User,
   Send,
   X,
   ArrowRight,
   Clock,
-  Package,
-  CalendarDays,
 } from 'lucide-react';
 import GuestLayout from '@/components/layout/GuestLayout';
 import {
-  MOCK_CURRENT_BOOKING,
   MOCK_MENU_ITEMS,
   HOUSEKEEPING_ITEMS,
   MAINTENANCE_ITEMS,
   CONCIERGE_ITEMS,
-  hotelEventEmitter,
-  MenuItem,
   OrderStatus,
   getTimeGreeting,
   getAIRecommendation,
 } from '@/data/mockData';
 import { cn } from '@/lib/utils';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';

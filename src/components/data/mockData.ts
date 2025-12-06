@@ -89,7 +89,7 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
     id: 'burger',
     name: 'Gourmet Burger',
     price: 18,
-    image: '/images/burger.jpg',
+    image: 'https://unsplash.com/photos/cooked-noodles-mIEGFvOdY0Y',
     description: 'Wagyu beef with truffle aioli',
     upsellItem: 'coke',
     upsellMessage:
@@ -100,7 +100,7 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
     id: 'pasta',
     name: 'Truffle Pasta',
     price: 24,
-    image: '/images/pasta.jpg',
+    image: '/pizza.jpg',
     description: 'Fresh fettuccine with black truffle',
     category: 'food',
   },

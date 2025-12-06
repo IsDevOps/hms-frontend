@@ -106,7 +106,6 @@ export interface AIRecommendation {
 //   },
 // ];
 
-
 export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: 'burger',
@@ -229,7 +228,6 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
     category: 'beverage',
   },
 ];
-
 
 // AI Recommendations based on time of day
 export const getAIRecommendation = (): AIRecommendation | null => {
