@@ -156,7 +156,7 @@ const BookingWizardPage = () => {
           extractedName: guestName,
           fraudScore: fraudScore,
           aiAnalysis:
-            'ID photo matches guest information. No tampering detected.',
+            'ID photo matches guest information. No tampering detected. ',
         });
         setUploadStatus('success');
         toast.success(successMessage);
@@ -168,7 +168,7 @@ const BookingWizardPage = () => {
       let errorMessage =
         err.response?.data?.message || err.message || 'Unknown error';
 
-      if (fraudScore >= 60) {
+      if (fraudScore) {
         errorMessage += ` (Fraud Score: ${fraudScore})`;
       }
 
@@ -176,6 +176,7 @@ const BookingWizardPage = () => {
       setVerificationResult({
         success: false,
         aiAnalysis: 'ID verification failed. Please try again.',
+         fraudScore: fraudScore,
       });
       toast.error('Booking failed', {
         description: errorMessage,
@@ -423,7 +424,9 @@ const BookingWizardPage = () => {
                             ID Verified!
                           </p>
                           <p className="mt-2 text-green-600">
-                            {verificationResult.aiAnalysis}
+                            {verificationResult.aiAnalysis} <br />
+                            Please proceed to your mail for check-in.
+
                           </p>
                         </>
                       ) : (
@@ -434,6 +437,7 @@ const BookingWizardPage = () => {
                           </p>
                           <p className="mt-2 text-red-600">
                             {verificationResult.aiAnalysis}
+                            {verificationResult.fraudScore}
                           </p>
                         </>
                       )}
