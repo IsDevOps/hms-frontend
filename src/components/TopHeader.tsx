@@ -33,7 +33,7 @@ const TopHeader = ({ showNotifications = true }: TopHeaderProps) => {
               Book Now
             </Link>
             <Link
-              href="/admin/dashboard"
+              href="/adminlogin"
               className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
             >
               Admin

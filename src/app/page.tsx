@@ -12,10 +12,12 @@ import {
   TrendingUp,
   CalendarCheck,
 } from 'lucide-react';
+import Image from 'next/image';
 
-import { MOCK_ROOMS } from '@/data/mockData';
-import RoomCard from '@/components/RoomCard';
+// import { MOCK_ROOMS } from '@/data/mockData';
+// import RoomCard from '@/components/RoomCard';
 import HeroImageCarousel from '@/components/Carousel';
+// import Rooms from '@/screens/Rooms';
 
 const coreFeatures = [
   {
@@ -61,9 +63,9 @@ const coreFeatures = [
 ];
 
 export default function Home() {
-  const featuredRooms = MOCK_ROOMS.filter(
-    (room) => room.status === 'CLEAN'
-  ).slice(0, 3);
+  // const featuredRooms = MOCK_ROOMS.filter(
+  //   (room) => room.status === 'CLEAN'
+  // ).slice(0, 3);
 
   return (
     <div className="bg-background min-h-screen">
@@ -176,18 +178,12 @@ export default function Home() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredRooms.map((room, index) => (
-              <div
-                key={room.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 90}ms` }}
-              >
-                <RoomCard room={room} />
-              </div>
-            ))}
-          </div>
+          <Image
+            src="/public/img.jpg"
+            alt=""
+            fill
+            className="object-cover transition-opacity duration-1000"
+          />
 
           <div className="mt-8 text-center sm:hidden">
             <Link href="/book" className="hotel-btn-secondary">
