@@ -255,7 +255,7 @@ const GuestStayPage = () => {
         {/* Primary Action Button */}
         <Button
           onClick={() => router.push(`/guest/portal/${bookingId}`)}
-          className="flex h-16 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-lg font-semibold text-white shadow-lg shadow-emerald-200/50 transition-all hover:bg-emerald-700 active:scale-95"
+          className="hotel-btn-primary flex h-16 w-full items-center justify-center gap-2 rounded-2xl text-lg font-semibold text-white shadow-lg shadow-emerald-200/50 transition-all active:scale-95"
         >
           Visit Service Portal
           <ArrowRight className="ml-1 h-5 w-5" />

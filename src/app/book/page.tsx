@@ -293,36 +293,40 @@ const BookingWizardPage = () => {
                   <Phone className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
                   <Input
                     id="name"
-                    value=""
-                    placeholder="John Doe"
+                    type="tel"
+                    pattern="[0-9]{10}"
+                    placeholder="0800000000"
                     className="h-12 pl-11"
                   />
                 </div>
               </div>
               <div className="space-y-6">
-                <Label htmlFor="name">Address</Label>
+                <Label htmlFor="address">Address</Label>
                 <div className="relative mt-2">
                   <MapPin className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
                   <Input
-                    id="name"
-                    value=""
-                    placeholder="John Doe"
+                    id="address"
+                    placeholder="24 Baker Street"
                     className="h-12 pl-11"
                   />
                 </div>
               </div>
-              <div className="space-y-6">
-                <Label htmlFor="name">Gender</Label>
+
+              <div>
+                <Label htmlFor="gender">Gender</Label>
                 <div className="relative mt-2">
                   <User className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
-                  <Input
-                    id="name"
-                    value=""
-                    placeholder="John Doe"
-                    className="h-12 pl-11"
-                  />
+                  <select
+                    id="gender"
+                    className="border-input bg-background h-12 w-full rounded-md border px-3 py-2 pl-11 text-sm"
+                  >
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
                 </div>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative mt-2">
