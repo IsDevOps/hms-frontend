@@ -429,7 +429,7 @@ const AdminDashboard = () => {
                       key={room.id}
                       onClick={() => handleRoomClick(room.number, hasAnomaly)}
                       className={cn(
-                        'rounded-lg border p-2 text-center transition-all duration-150 hover:scale-105',
+                        'rounded-lg border p-2 text-center transition-all duration-750 hover:scale-105',
                         hasAnomaly
                           ? 'border-destructive bg-destructive/10 animate-pulse cursor-pointer'
                           : 'border-border bg-card cursor-default'
