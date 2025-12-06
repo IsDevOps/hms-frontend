@@ -107,7 +107,7 @@ export default function Home() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
-                  href="/guest/stay/b_12345"
+                  href="/guest/stay"
                   className="hotel-btn-secondary text-base"
                 >
                   Live Guest Demo
