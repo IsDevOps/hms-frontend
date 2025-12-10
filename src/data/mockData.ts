@@ -623,7 +623,7 @@ export const MOCK_DASHBOARD_STATS = {
   occupancy: { value: 78, change: 5, label: 'Occupancy Rate' },
   revenue: { value: 24850, change: 12, label: "Today's Revenue" },
   issues: { value: 3, change: -2, label: 'Open Issues' },
-  alerts: { value: 2, change: 1, label: 'Active Alerts' },
+  alerts: { value: 2, change: 1, label: 'Fraud Alerts' },
 };
 
 // Event emitter for mock WebSocket functionality

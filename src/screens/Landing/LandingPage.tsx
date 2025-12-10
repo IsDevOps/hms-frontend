@@ -74,14 +74,14 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Luxury hotel lobby"
           layout="fill"
           objectFit="cover"
           className="absolute inset-0 z-0"
         />
-        <div className="absolute inset-0 bg-black opacity-50 z-10" />
-        <div className="from-primary/10 absolute inset-0 bg-gradient-to-br to-transparent z-10" />
+        <div className="absolute inset-0 z-10 bg-black opacity-50" />
+        <div className="from-primary/10 absolute inset-0 z-10 bg-gradient-to-br to-transparent" />
 
         <div className="relative z-20 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
@@ -95,17 +95,16 @@ export default function LandingPage() {
                     />
                   ))}
                 </div>
-                <span className="text-white text-sm">
+                <span className="text-sm text-white">
                   Smart Hospitality Platform
                 </span>
               </div>
 
-              <h1 className="text-white text-4xl leading-tight font-semibold sm:text-5xl lg:text-6xl">
-                The Future of{' '}
-                <span className="">Hotel Management</span>
+              <h1 className="text-4xl leading-tight font-semibold text-white sm:text-5xl lg:text-6xl">
+                The Future of <span className="">Hotel Management</span>
               </h1>
 
-              <p className="text-white mt-6 max-w-2xl text-lg leading-relaxed">
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white">
                 An end-to-end Operating System for modern hotels. Manage rooms,
                 guests, staff, and operations — all from a unified intelligent
                 platform.
@@ -119,7 +118,6 @@ export default function LandingPage() {
                   Explore Rooms
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </button>
-                
               </div>
             </div>
 
