@@ -155,7 +155,9 @@ const ViewRooms = () => {
                 {/* Price Tag */}
                 <div className="absolute right-3 bottom-3 rounded-lg bg-slate-900/90 px-3 py-1 text-white backdrop-blur-sm">
                   <p className="text-xs font-medium">
-                    <span className="text-lg font-bold">N{room.price}</span>
+                    <span className="text-lg font-bold">
+                      N{room.price * 1000}
+                    </span>
                     <span className="text-slate-300">/night</span>
                   </p>
                 </div>

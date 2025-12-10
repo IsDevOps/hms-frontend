@@ -119,16 +119,47 @@ const serviceTypes = [
 const getItemImage = (name: string, type: string) => {
   const n = name.toLowerCase();
   // Food
-  if (n.includes('burger'))
-    return 'https://unsplash.com/photos/burger-with-lettuce-and-tomato-E94j3rMcxlw';
-  if (n.includes('pasta'))
-    return 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=500&q=60';
-  if (n.includes('salad'))
-    return 'https://plus.unsplash.com/premium_photo-1723291306365-841e10185b6f?q=80&w=1272&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-  if (n.includes('coke') || n.includes('drink'))
-    return 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=60';
+  // if (n.includes('burger'))
+  //   return 'https://unsplash.com/photos/burger-with-lettuce-and-tomato-E94j3rMcxlw';
+  // if (n.includes('pasta'))
+  //   return 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=500&q=60';
+  // if (n.includes('salad'))
+  //   return 'https://plus.unsplash.com/premium_photo-1723291306365-841e10185b6f?q=80&w=1272&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  // if (n.includes('coke') || n.includes('drink'))
+  //   return 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=60';
+  // if (type === 'food')
+  //   return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=60';
+
+  if (n.includes('jollof'))
+    return 'https://images.unsplash.com/photo-1605648916365-9231b6de53c6?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('fried rice'))
+    return 'https://images.unsplash.com/photo-1626074353765-c3a91dfc5d32?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('egusi'))
+    return 'https://images.unsplash.com/photo-1714157703540-5227f13213fa?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('ogbono'))
+    return 'https://images.unsplash.com/photo-1711397164326-fc0c54b6e21e?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('suya'))
+    return 'https://images.unsplash.com/photo-1588167108379-3e3cdaf6e97c?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('akara'))
+    return 'https://images.unsplash.com/photo-1576712173425-53b302f1679a?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('yam'))
+    return 'https://images.unsplash.com/photo-1660404764781-163d52a8b5de?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('pepper soup'))
+    return 'https://images.unsplash.com/photo-1676300186398-9d3ce7b783ad?auto=format&fit=crop&w=800&q=60';
+
+  if (n.includes('drink') || n.includes('zobo') || n.includes('chapman'))
+    return 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=800&q=60';
+
+  // fallback
   if (type === 'food')
-    return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=60';
+    return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=60';
 
   // Housekeeping
   if (n.includes('towel'))
@@ -791,7 +822,7 @@ const GuestPortal = () => {
                     <div className="flex items-center justify-between">
                       {item.price ? (
                         <span className="font-bold text-emerald-600">
-                          ${item.price}
+                          N{item.price}
                         </span>
                       ) : (
                         <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">

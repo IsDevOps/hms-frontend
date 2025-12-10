@@ -112,7 +112,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       </aside>
 
       {/* Main Content */}
-     <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <header className="bg-card border-border flex h-16 items-center justify-between border-b px-4 lg:px-6">
           <div className="flex items-center gap-4">
